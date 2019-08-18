@@ -15,7 +15,13 @@ import {
 class Menu extends Component {
     state = {  }
     render() { 
-        return (<View><Text>MENU</Text></View>  );
+        return (<View>
+            <Text>MENU</Text>
+            <Button
+            title="reset"
+            onPress={this.props.reset}
+            />
+            </View>  );
     }
 }
  

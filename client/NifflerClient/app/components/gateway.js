@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
 
+import MyTextInput from './myTextInut';
+
+import img from "./pictures/logo.png"
+
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,6 +14,7 @@ import {
   TextInput,
   Button,
   Alert,
+  Image
 } from 'react-native';
 
 import {
@@ -19,10 +24,11 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {placeholder} from '@babel/types';
 
 class Gateway extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       host: undefined,
       user: {
@@ -32,9 +38,6 @@ class Gateway extends Component {
         email: undefined,
         password: undefined,
       },
-      username: undefined,
-      password: undefined,
-      debug: undefined,
     };
   }
 
@@ -60,25 +63,22 @@ class Gateway extends Component {
           'Success',
           `the user: ${json.user.name} is login`,
           [
-            {text: 'continue', onPress: () => this.setState({user: json.user})},
-           
+            {
+              text: 'continue',
+              onPress: () => {
+                this.setState({user: json.user});
+                this.props.navigation.navigate('menu');
+              },
+            },
           ],
           {cancelable: false},
         );
-        
       })
       .catch(err => {
-        Alert.alert('error', `The user: ${user.name} has not loged`);
+        Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
       });
-      //3424a784
+    //3424a784
   };
-
-  componentDidUpdate(){
-    if(this.state.user)
-      this.props.navigation.navigate("menu");
-
-
-  }
 
   showRegister = () => {};
 
@@ -86,70 +86,134 @@ class Gateway extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        
-        <View style={styles.secondContainer}>
-          <Text>HostId</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={text => this.setState({host: text})}
+      <View style={styles.firstContainer}>
+
+        <View style={{flex:0.4}}>
+          <Image
+          style={{
+            flex:1,
+            height: null,
+            resizeMode: 'contain',
+            width: null,
+          }}
+          source={img}
           />
         </View>
 
         <View style={styles.secondContainer}>
-          <Text>Username</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={text => this.setState({username: text})}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <MyTextInput
+              placeholder={'HostId'}
+              onChangeText={text => this.setState({host: text})}
+              value={this.state.host}
+            />
+          </View>
 
-        <View style={styles.secondContainer}>
-          <Text>Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={text => this.setState({password: text})}
-            secureTextEntry={true}
-          />
-        </View>
+          <View style={styles.register}>
+            <Text style={styles.title}>Register</Text>
 
-        <View style={styles.secondContainer}>
-          <Button title="Login" onPress={this.login} />
-        </View>
+            <View style={styles.inputContainer}>
+              <MyTextInput
+                style={styles.input}
+                onChangeText={text => this.setState({user: {name: text}})}
+                value={this.state.name}
+                placeholder="Name"
+              />
+            </View>
 
-        <View>
-          <Text>Data</Text>
-          <Text>{this.state.username}</Text>
-          <Text>{this.state.password}</Text>
-        </View>
+            <View style={styles.inputContainer}>
+              
+              <MyTextInput
+                style={styles.input}
+                onChangeText={text => this.setState({user: {email: text}})}
+                value={this.state.email}
+                placeholder="Email"
+              />
+            </View>
 
-        <View>
-          <Text>User:</Text>
-          <Text>_id: {this.state.user._id}</Text>
-          <Text>name: {this.state.user.name}</Text>
-          <Text>username: {this.state.user.username}</Text>
-          <Text>email: {this.state.user.email}</Text>
-          <Text>password: {this.state.user.password}</Text>
-        </View>
+            <View style={styles.login}>
+              <Text style={styles.title}>Login</Text>
 
+              <View style={styles.inputContainer}>
+                <MyTextInput
+                  style={styles.input}
+                  onChangeText={text => this.setState({user: {username: text}})}
+                  value={this.state.username}
+                  placeholder="Username"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <MyTextInput
+                  style={styles.input}
+                  onChangeText={text => this.setState({user: {password: text}})}
+                  value={this.state.password}
+                  secureTextEntry={true}
+                  placeholder="Password"
+                />
+              </View>
+
+              <View style={styles.buttonContainer}>
+                <Button title="Login" onPress={this.login} />
+              </View>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <Button title="Register" />
+            </View>
+
+            <View style={{display: 'none'}}>
+              <Text>User:</Text>
+              <Text>_id: {this.state.user._id}</Text>
+              <Text>name: {this.state.user.name}</Text>
+              <Text>username: {this.state.user.username}</Text>
+              <Text>email: {this.state.user.email}</Text>
+              <Text>password: {this.state.user.password}</Text>
+            </View>
+          </View>
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  firstContainer: {
     flex: 1,
-    justifyContent: 'center',
-    margin: 20,
-    padding: 20,
-    backgroundColor: '#E6E4ED',
+    backgroundColor: '#BDBDBD',
   },
   secondContainer: {
-    margin: 20,
+    flex: 1,
+    justifyContent: 'center',
+    margin: 10,
+  },
+  inputContainer: {
+    margin: 10,
+  },
+  buttonContainer: {
+    margin: 10,
+    justifyContent: 'space-between',
   },
   input: {
     backgroundColor: '#FFFF',
+  },
+  title: {
+    fontFamily: 'verdana',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: 'white',
+  },
+  register: {
+    margin: 10,
+    backgroundColor: '#00796B',
+  },
+  login: {
+    margin: 20,
+    backgroundColor: '#009688',
+  },
+  label: {
+    color: 'white',
   },
 });
 
