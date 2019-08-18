@@ -24,6 +24,14 @@ class Gateway extends Component {
   constructor() {
     super();
     this.state = {
+      host: undefined,
+      user: {
+        _id: undefined,
+        name: undefined,
+        username: undefined,
+        email: undefined,
+        password: undefined,
+      },
       username: undefined,
       password: undefined,
       debug: undefined,
@@ -33,13 +41,13 @@ class Gateway extends Component {
   login = () => {
     let {username, password} = this.state;
 
-    Alert.alert("message","login")
+    Alert.alert('message', 'login');
 
     if (!username || !password) Alert.alert('Error', 'fill the blanks');
 
     let user = {username, password};
 
-    fetch('http://f3986ded.ngrok.io/api/login', {
+    fetch(`http://${this.state.host}.ngrok.io/api/login`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -48,12 +56,29 @@ class Gateway extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        Alert.alert('successs', `the user: ${json.user.name} is login`);
+        Alert.alert(
+          'Success',
+          `the user: ${json.user.name} is login`,
+          [
+            {text: 'continue', onPress: () => this.setState({user: json.user})},
+           
+          ],
+          {cancelable: false},
+        );
+        
       })
       .catch(err => {
         Alert.alert('error', `The user: ${user.name} has not loged`);
       });
+      //3424a784
   };
+
+  componentDidUpdate(){
+    if(this.state.user)
+      this.props.navigation.navigate("menu");
+
+
+  }
 
   showRegister = () => {};
 
@@ -62,6 +87,15 @@ class Gateway extends Component {
   render() {
     return (
       <View style={styles.container}>
+        
+        <View style={styles.secondContainer}>
+          <Text>HostId</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={text => this.setState({host: text})}
+          />
+        </View>
+
         <View style={styles.secondContainer}>
           <Text>Username</Text>
           <TextInput
@@ -83,12 +117,21 @@ class Gateway extends Component {
           <Button title="Login" onPress={this.login} />
         </View>
 
-        <Text>Data</Text>
-        <Text>{this.state.username}</Text>
-        <Text>{this.state.password}</Text>
+        <View>
+          <Text>Data</Text>
+          <Text>{this.state.username}</Text>
+          <Text>{this.state.password}</Text>
+        </View>
 
-        <Text>Debug</Text>
-        <Text>{this.state.debug}</Text>
+        <View>
+          <Text>User:</Text>
+          <Text>_id: {this.state.user._id}</Text>
+          <Text>name: {this.state.user.name}</Text>
+          <Text>username: {this.state.user.username}</Text>
+          <Text>email: {this.state.user.email}</Text>
+          <Text>password: {this.state.user.password}</Text>
+        </View>
+
       </View>
     );
   }
