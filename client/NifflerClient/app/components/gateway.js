@@ -88,7 +88,7 @@ class Gateway extends Component {
     return (
       <View style={styles.firstContainer}>
 
-        <View style={{flex:0.4}}>
+        <View style={{flex:0.68}}>
           <Image
           style={{
             flex:1,
@@ -185,13 +185,13 @@ const styles = StyleSheet.create({
   secondContainer: {
     flex: 1,
     justifyContent: 'center',
-    margin: 10,
+    margin: 5,
   },
   inputContainer: {
-    margin: 10,
+    margin: 5,
   },
   buttonContainer: {
-    margin: 10,
+    margin: 5,
     justifyContent: 'space-between',
   },
   input: {
