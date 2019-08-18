@@ -8,7 +8,8 @@ import {
   Text,
   StatusBar,
   TextInput,
-  Button
+  Button,
+  Alert
 } from "react-native";
 
 import {
@@ -20,24 +21,35 @@ import {
 } from "react-native/Libraries/NewAppScreen";
 
 
+
+
+
 class Gateway extends Component {
 
   constructor(){
     super()
     this.state = {
-     username:"",
-     password:""
+     username: undefined,
+     password: undefined,
+     debug:undefined
     };
 
   }
 
   login=()=>{
+    let {username, password} = this.state
 
+    if(!username || !password )
+      Alert.alert("Error","fill the blanks")
+
+   
   }
 
   showRegister = () => {};
 
-  showLogin = () => {};
+  showLogin = () => {
+    
+  };
 
   render() {
     return (
@@ -65,6 +77,9 @@ class Gateway extends Component {
         <Text>Data</Text>
         <Text>{this.state.username}</Text>
         <Text>{this.state.password}</Text>
+
+        <Text>Debug</Text>
+        <Text>{this.state.debug}</Text>
       </View>
     );
   }
@@ -75,7 +90,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     margin: 20,
-    padding: 20
+    padding: 20,
+    backgroundColor: "#E6E4ED"
   },
   secondContainer: {
     margin: 20
