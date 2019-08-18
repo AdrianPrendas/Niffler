@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from 'react';
 
 import {
   SafeAreaView,
@@ -9,69 +9,78 @@ import {
   StatusBar,
   TextInput,
   Button,
-  Alert
-} from "react-native";
+  Alert,
+} from 'react-native';
 
 import {
   Header,
   LearnMoreLinks,
   Colors,
   DebugInstructions,
-  ReloadInstructions
-} from "react-native/Libraries/NewAppScreen";
-
-
-
-
+  ReloadInstructions,
+} from 'react-native/Libraries/NewAppScreen';
 
 class Gateway extends Component {
-
-  constructor(){
-    super()
+  constructor() {
+    super();
     this.state = {
-     username: undefined,
-     password: undefined,
-     debug:undefined
+      username: undefined,
+      password: undefined,
+      debug: undefined,
     };
-
   }
 
-  login=()=>{
-    let {username, password} = this.state
+  login = () => {
+    let {username, password} = this.state;
 
-    if(!username || !password )
-      Alert.alert("Error","fill the blanks")
+    Alert.alert("message","login")
 
-   
-  }
+    if (!username || !password) Alert.alert('Error', 'fill the blanks');
+
+    let user = {username, password};
+
+    fetch('http://f3986ded.ngrok.io/api/login', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(user),
+    })
+      .then(res => res.json())
+      .then(json => {
+        Alert.alert('successs', `the user: ${json.user.name} is login`);
+      })
+      .catch(err => {
+        Alert.alert('error', `The user: ${user.name} has not loged`);
+      });
+  };
 
   showRegister = () => {};
 
-  showLogin = () => {
-    
-  };
+  showLogin = () => {};
 
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.secondContainer}>
           <Text>Username</Text>
-          <TextInput style={styles.input}
-            onChangeText={text=>this.setState({username:text})}
-           />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => this.setState({username: text})}
+          />
         </View>
 
         <View style={styles.secondContainer}>
           <Text>Password</Text>
-          <TextInput style={styles.input} 
-          onChangeText={text=>this.setState({password:text})}
-          secureTextEntry={true} />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => this.setState({password: text})}
+            secureTextEntry={true}
+          />
         </View>
 
         <View style={styles.secondContainer}>
-          <Button title="Login"
-            onPress={this.login}
-           />
+          <Button title="Login" onPress={this.login} />
         </View>
 
         <Text>Data</Text>
@@ -88,17 +97,17 @@ class Gateway extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     margin: 20,
     padding: 20,
-    backgroundColor: "#E6E4ED"
+    backgroundColor: '#E6E4ED',
   },
   secondContainer: {
-    margin: 20
+    margin: 20,
   },
   input: {
-    backgroundColor: "#FFFF"
-  }
+    backgroundColor: '#FFFF',
+  },
 });
 
 export default Gateway;
