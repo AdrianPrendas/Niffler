@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   StatusBar,
   TextInput,
   Button,
+  Alert
 } from 'react-native';
 
 class Menu extends Component {
@@ -24,6 +26,11 @@ class Menu extends Component {
         ...props.user
       }
     };
+  }
+
+  componentDidMount(){
+    let {user} = this.props.navigation.state.params
+    this.setState({user})
   }
 
   render() {

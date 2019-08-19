@@ -39,9 +39,11 @@ class Gateway extends Component {
         password: undefined,
       },
     };
+    this.props.navigation.setParams({hideHeader:true})
   }
 
   login=()=>{
+    this.props.navigation.push("Menu", {user, host})
     let { username, password } = this.state.user;
     let { host } = this.state;
     
@@ -64,11 +66,13 @@ class Gateway extends Component {
     })
       .then(res => res.json())
       .then(json => {
+        let {user} = json
         Alert.alert(
           'Success',
-          `the user: ${json.user.name} is loged`)
-          this.setState({user:json.user})
-          this.props.loginHandler({user: json.user, host})
+          `the user: ${user.name} is loged`)
+          this.setState({user})
+          this.props.navigation.setParams({user, host})
+          this.props.navigation.push("Menu", {user, host})
       })
       .catch(err => {
         Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
