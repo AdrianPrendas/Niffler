@@ -30,7 +30,7 @@ class Gateway extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      host: undefined,
+      host: props.host,
       user: {
         _id: undefined,
         name: undefined,
@@ -41,16 +41,21 @@ class Gateway extends Component {
     };
   }
 
-  login = () => {
-    let {username, password} = this.state;
+  login=()=>{
+    let { username, password } = this.state.user;
+    let { host } = this.state;
+    
+    if(!this.state.host){
+      return Alert.alert('Error', 'the host is needed');
+    }
 
-    Alert.alert('message', 'login');
+    if (!username && !password){
+      return Alert.alert('Error', 'fill the blanks');
+    }
 
-    if (!username || !password) Alert.alert('Error', 'fill the blanks');
-
-    let user = {username, password};
-
-    fetch(`http://${this.state.host}.ngrok.io/api/login`, {
+    let user = { username, password };
+  
+    fetch(`http://${host}.ngrok.io/api/login`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -61,44 +66,53 @@ class Gateway extends Component {
       .then(json => {
         Alert.alert(
           'Success',
-          `the user: ${json.user.name} is login`,
-          [
-            {
-              text: 'continue',
-              onPress: () => {
-                this.setState({user: json.user});
-                this.props.navigation.navigate('menu');
-              },
-            },
-          ],
-          {cancelable: false},
-        );
+          `the user: ${json.user.name} is loged`)
+          this.setState({user:json.user})
+          this.props.loginHandler({user: json.user, host})
       })
       .catch(err => {
         Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
       });
-    //3424a784
   };
 
-  showRegister = () => {};
+  register =()=>{
 
-  showLogin = () => {};
+    let {user, host} = this.state
+
+    fetch(`http://${host}.ngrok.io/api/register`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(user),
+    })
+      .then(res => res.json())
+      .then(json => {
+        Alert.alert(
+          'Success',
+          `the user: ${json.username} registered`)
+      })
+      .catch(err => {
+        Alert.alert('Error', `cant not registered`, [{text: 'Okay'}]);
+      });
+
+  }
 
   render() {
     return (
       <View style={styles.firstContainer}>
 
-        <View style={{flex:0.68}}>
+       
           <Image
           style={{
-            flex:1,
+            flex:0.68,
             height: null,
             resizeMode: 'contain',
             width: null,
           }}
           source={img}
           />
-        </View>
+       
 
         <View style={styles.secondContainer}>
           <View style={styles.inputContainer}>
@@ -115,8 +129,8 @@ class Gateway extends Component {
             <View style={styles.inputContainer}>
               <MyTextInput
                 style={styles.input}
-                onChangeText={text => this.setState({user: {name: text}})}
-                value={this.state.name}
+                onChangeText={text => this.setState({user: {...this.state.user,name: text}})}
+                value={this.state.user.name}
                 placeholder="Name"
               />
             </View>
@@ -125,8 +139,8 @@ class Gateway extends Component {
               
               <MyTextInput
                 style={styles.input}
-                onChangeText={text => this.setState({user: {email: text}})}
-                value={this.state.email}
+                onChangeText={text => this.setState({user: {...this.state.user,email: text}})}
+                value={this.state.user.email}
                 placeholder="Email"
               />
             </View>
@@ -137,8 +151,8 @@ class Gateway extends Component {
               <View style={styles.inputContainer}>
                 <MyTextInput
                   style={styles.input}
-                  onChangeText={text => this.setState({user: {username: text}})}
-                  value={this.state.username}
+                  onChangeText={text => this.setState({user: {...this.state.user,username: text}})}
+                  value={this.state.user.username}
                   placeholder="Username"
                 />
               </View>
@@ -146,8 +160,8 @@ class Gateway extends Component {
               <View style={styles.inputContainer}>
                 <MyTextInput
                   style={styles.input}
-                  onChangeText={text => this.setState({user: {password: text}})}
-                  value={this.state.password}
+                  onChangeText={text => this.setState({user: {...this.state.user,password: text}})}
+                  value={this.state.user.password}
                   secureTextEntry={true}
                   placeholder="Password"
                 />
@@ -159,17 +173,9 @@ class Gateway extends Component {
             </View>
 
             <View style={styles.buttonContainer}>
-              <Button title="Register" />
+              <Button title="Register" onPress={this.register} />
             </View>
 
-            <View style={{display: 'none'}}>
-              <Text>User:</Text>
-              <Text>_id: {this.state.user._id}</Text>
-              <Text>name: {this.state.user.name}</Text>
-              <Text>username: {this.state.user.username}</Text>
-              <Text>email: {this.state.user.email}</Text>
-              <Text>password: {this.state.user.password}</Text>
-            </View>
           </View>
         </View>
       </View>
@@ -209,7 +215,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00796B',
   },
   login: {
-    margin: 20,
+    margin: 30,
     backgroundColor: '#009688',
   },
   label: {
