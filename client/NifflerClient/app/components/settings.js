@@ -9,7 +9,7 @@ class Settings extends Component {
     render() { 
         return (
             <View style={MyStyleSheet.dafault}>
-              <Text>Settings frame</Text>
+              <Text>Settings screen</Text>
             </View>
           );
     }

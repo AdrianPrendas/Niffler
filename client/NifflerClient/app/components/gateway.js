@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 
+import {NavigationActions} from 'react-navigation';
+
 import MyTextInput from './myTextInut';
 
-import img from "./pictures/logo.png"
+import img from './pictures/logo.png';
 
 import {
   SafeAreaView,
@@ -14,7 +16,7 @@ import {
   TextInput,
   Button,
   Alert,
-  Image
+  Image,
 } from 'react-native';
 
 import {
@@ -39,24 +41,25 @@ class Gateway extends Component {
         password: undefined,
       },
     };
-    this.props.navigation.setParams({hideHeader:true})
+    this.props.navigation.setParams({hideHeader: true});
   }
 
-  login=()=>{
-    this.props.navigation.push("Menu", {user, host})
-    let { username, password } = this.state.user;
-    let { host } = this.state;
-    
-    if(!this.state.host){
+  login = () => {
+    return this.props.navigation.navigate("Dashboard")
+
+    let {username, password} = this.state.user;
+    let {host} = this.state;
+
+    if (!this.state.host) {
       return Alert.alert('Error', 'the host is needed');
     }
 
-    if (!username && !password){
+    if (!username && !password) {
       return Alert.alert('Error', 'fill the blanks');
     }
 
-    let user = { username, password };
-  
+    let user = {username, password};
+
     fetch(`http://${host}.ngrok.io/api/login`, {
       headers: {
         'Content-Type': 'application/json',
@@ -66,22 +69,28 @@ class Gateway extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        let {user} = json
-        Alert.alert(
-          'Success',
-          `the user: ${user.name} is loged`)
-          this.setState({user})
-          this.props.navigation.setParams({user, host})
-          this.props.navigation.push("Menu", {user, host})
+        let {user} = json;
+        Alert.alert('Success', `the user: ${user.name} is logged`);
+        this.setState({user});
+        //this.props.navigation.setParams({user, host})
+        //this.props.navigation.push("Dashboard", {user, host})
+        const navigateAction = NavigationActions.navigate({
+          routeName: 'Profile',
+
+          params: {user},
+
+          action: NavigationActions.navigate({routeName: 'SubProfileRoute'}),
+        });
+
+        this.props.navigation.dispatch(navigateAction);
       })
       .catch(err => {
         Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
       });
   };
 
-  register =()=>{
-
-    let {user, host} = this.state
+  register = () => {
+    let {user, host} = this.state;
 
     fetch(`http://${host}.ngrok.io/api/register`, {
       headers: {
@@ -92,31 +101,27 @@ class Gateway extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        Alert.alert(
-          'Success',
-          `the user: ${json.username} registered`)
+        Alert.alert('Success', `the user: ${json.username} registered`);
       })
       .catch(err => {
         Alert.alert('Error', `cant not registered`, [{text: 'Okay'}]);
       });
-
-  }
+  };
 
   render() {
     return (
-      <View style={styles.firstContainer}>
-
-       
+      <ScrollView style={styles.firstContainer}>
+        <View style={{flex: 0.2}}>
           <Image
-          style={{
-            flex:0.68,
-            height: null,
-            resizeMode: 'contain',
-            width: null,
-          }}
-          source={img}
+            style={{
+              flex: 1,
+              height: null,
+              resizeMode: 'contain',
+              width: null,
+            }}
+            source={img}
           />
-       
+        </View>
 
         <View style={styles.secondContainer}>
           <View style={styles.inputContainer}>
@@ -133,17 +138,20 @@ class Gateway extends Component {
             <View style={styles.inputContainer}>
               <MyTextInput
                 style={styles.input}
-                onChangeText={text => this.setState({user: {...this.state.user,name: text}})}
+                onChangeText={text =>
+                  this.setState({user: {...this.state.user, name: text}})
+                }
                 value={this.state.user.name}
                 placeholder="Name"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              
               <MyTextInput
                 style={styles.input}
-                onChangeText={text => this.setState({user: {...this.state.user,email: text}})}
+                onChangeText={text =>
+                  this.setState({user: {...this.state.user, email: text}})
+                }
                 value={this.state.user.email}
                 placeholder="Email"
               />
@@ -155,7 +163,9 @@ class Gateway extends Component {
               <View style={styles.inputContainer}>
                 <MyTextInput
                   style={styles.input}
-                  onChangeText={text => this.setState({user: {...this.state.user,username: text}})}
+                  onChangeText={text =>
+                    this.setState({user: {...this.state.user, username: text}})
+                  }
                   value={this.state.user.username}
                   placeholder="Username"
                 />
@@ -164,7 +174,9 @@ class Gateway extends Component {
               <View style={styles.inputContainer}>
                 <MyTextInput
                   style={styles.input}
-                  onChangeText={text => this.setState({user: {...this.state.user,password: text}})}
+                  onChangeText={text =>
+                    this.setState({user: {...this.state.user, password: text}})
+                  }
                   value={this.state.user.password}
                   secureTextEntry={true}
                   placeholder="Password"
@@ -179,10 +191,9 @@ class Gateway extends Component {
             <View style={styles.buttonContainer}>
               <Button title="Register" onPress={this.register} />
             </View>
-
           </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }

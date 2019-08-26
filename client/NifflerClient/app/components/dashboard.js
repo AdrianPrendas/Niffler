@@ -13,6 +13,10 @@ class DashBoard extends Component {
         return (
             <View style={MyStyleSheet.dafault}>
               <Text>DashBoard</Text>
+              <Button
+                title="logout"
+                onPress={()=>this.props.navigation.navigate("Gateway")}
+              />
             </View>
           );
     }

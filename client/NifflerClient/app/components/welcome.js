@@ -14,7 +14,7 @@ class Welcome extends Component {
                 <View style={{margin:10}}>
                 <Button 
                 title="Login"
-                onPress={()=>this.props.navigation.navigate("Dashboard")}
+                onPress={()=>this.props.navigation.navigate("Gateway")}
               />
                 </View>
               
