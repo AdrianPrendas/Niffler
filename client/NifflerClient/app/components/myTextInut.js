@@ -33,6 +33,8 @@ export default class MyTextInput extends React.Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         
+        keyboardType={this.props.keyboardType}
+
         placeholder={placeholder}
         onChangeText={onChangeText}
         value={value}

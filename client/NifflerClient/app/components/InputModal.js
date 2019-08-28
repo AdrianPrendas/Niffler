@@ -1,27 +1,36 @@
 import React, {Component} from 'react';
 
-import {View, Text, TouchableOpacity, Modal, Alert, TextInput, Button} from 'react-native';
+import {
+    View, 
+    Text, 
+    TouchableOpacity, 
+    Modal, 
+    Alert, 
+    TextInput, 
+    Button
+} from 'react-native';
 
 import MyTextInput from "./myTextInut"
 
 import MyStyleSheet from './css/styles';
 
-class Settings extends Component {
+class InputModal extends Component {
   state = {
-    
-    modal: false,
+    amount:0,
+    Description:"",
+    show: this.props.show,
   };
 
   add(){
 
-    this.setState({modal: false})
+    this.setState({show: false})
   }
 
   render() {
     return (
       <View style={MyStyleSheet.dafault}>
-        <Text>Settings screen</Text>
-        <Modal visible={this.state.modal}>
+        <Text>InputModal screen</Text>
+        <Modal visible={this.state.show}>
 
           <View style={MyStyleSheet.dafault}>
           
@@ -44,7 +53,7 @@ class Settings extends Component {
           />
           </View>
         </Modal>
-        <TouchableOpacity onPress={()=>this.setState({modal: true})}>
+        <TouchableOpacity onPress={()=>this.setState({show: true})}>
           <Text>Open modal</Text>
         </TouchableOpacity>
       </View>
@@ -53,4 +62,4 @@ class Settings extends Component {
   }
 }
 
-export default Settings;
+export default InputModal;
