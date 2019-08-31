@@ -13,6 +13,7 @@ class InputScreen extends Component {
     n:0,
     amount: 0,
     description: '',
+    edited: undefined
   };
 
   createRegister(register) {
@@ -56,12 +57,27 @@ class InputScreen extends Component {
     this.setState({registers, showInputModal:false, n:n+1, amount:0, description:""})
   }
 
+  edited(){
+
+    let {registers, amount, description, edited} = this.state
+
+    registers = registers.filter(r => r.n != edited)
+
+    registers.push({n:edited,amount,description,dateTime: new Date(Date.now()) })
+
+    registers = registers.sort((a,b)=>a.n-b.n)
+
+    this.setState({registers, showInputModal:false, amount:0, description:"", edited: undefined})
+
+
+  }
+
 
   edit(register) {
 
     let {n, amount, description} = register
 
-    this.setState({showInputModal:true, n, amount, description })
+    this.setState({showInputModal:true, edited:n, amount, description })
   }
 
   del(register) {
@@ -134,7 +150,7 @@ class InputScreen extends Component {
                   />
                   <Button 
                   title="add" 
-                  onPress={() => this.add()} 
+                  onPress={() => !this.state.edited ? this.add(): this.edited()} 
                   />
                 </View>
               </View>

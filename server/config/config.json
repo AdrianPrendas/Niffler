@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "itzumarpa",
+    "password": "abcd",
+    "database": "niffler",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "itzumarpa",
+    "password": "abcd",
+    "database": "niffler",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "itzumarpa",
+    "password": "abcd",
+    "database": "niffler",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  }
+}
