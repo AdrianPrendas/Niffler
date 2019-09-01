@@ -21,6 +21,7 @@ import Settings from './app/components/settings';
 
 
 
+
 const DashBoardTabNavigator = createBottomTabNavigator({
   InputScreen,Profile,Settings
 },
