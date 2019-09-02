@@ -13,10 +13,9 @@ class Welcome extends Component {
 
     _retrieveData = async () => {
       try {
-        const userString = await AsyncStorage.getItem('user');
-        if (userString) {
-          let user = JSON.parse(userString)
-          this.props.navigation.navigate("Profile", {user})
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          this.props.navigation.navigate("Profile", {token})
         }
       } catch (error) {
         Alert.alert('Error', `${error}`, [{text: 'Okay'}]);

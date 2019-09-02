@@ -9,6 +9,7 @@ var app = express();
 // Cargar las rutas
 
 var user_routes = require("./routes/user");
+var transaction_routes = require("./routes/transaction");
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, "public")));
@@ -34,5 +35,6 @@ app.use((req, res, next) => {
 
 // Carga de rutas base
 app.use("/api", user_routes);
+app.use("/api", transaction_routes);
 
 module.exports = app;

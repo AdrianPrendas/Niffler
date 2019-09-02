@@ -7,35 +7,37 @@ import MyStyleSheet from './css/styles';
 class Profile extends Component {
 
     state = {
-      user: {}
+      toke:""
     }
   
 
   componentDidMount(){
-    let user = this.props.navigation.getParam("user")
-    this.setState({user})
-    this._storeData(user)
+    let token = this.props.navigation.getParam("token")
+
+    this.setState({token})
+    this._storeData(token)
   }
 
-  _storeData = async (user) => {
+  _storeData = async (token) => {
     try {
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem('token', token);
     } catch (error) {
-      Alert.alert('Error', `Cannot storage user in AsyncStorage`, [{text: 'Okay'}]);
+      Alert.alert('Error', `Cannot storage token in AsyncStorage`, [{text: 'Okay'}]);
     }
   };
 
   logout = async()=>{
     try {
-      await AsyncStorage.removeItem('user',(err)=>{
+      await AsyncStorage.removeItem('token',(err)=>{
         if(err)
-          Alert.alert('Error', `Cannot storage user in AsyncStorage: ${err}`, [{text: 'Okay'}]);
-        else
-          this.setState({user:undefined})
+          Alert.alert('Error', `Can not remove token from AsyncStorage: ${err}`, [{text: 'Okay'}]);
+        else{
+          this.setState({token:undefined})
           this.props.navigation.navigate("Welcome")
+        }
       });
     } catch (error) {
-      Alert.alert('Error', `Cannot storage user in AsyncStorage: ${error}`, [{text: 'Okay'}]);
+      Alert.alert('Error', `Can not remove Token from AsyncStorage: ${error}`, [{text: 'Okay'}]);
     }
   }
 
@@ -45,14 +47,11 @@ class Profile extends Component {
         <Text>Profile screen</Text>
 
         <View>
-          
-          <View>
-            <Text>{JSON.stringify(this.state.user,undefined,2)}</Text>
-            <Button
+          <Text>{this.state.token}</Text>
+          <Button
               title="logout"
               onPress={()=>this.logout()}
             />
-          </View>
         </View>
       </View>
     );

@@ -24,20 +24,21 @@ import {
 
 class Login extends Component {
   state = {
-    user:{
-      username:undefined,
-      password:undefined
+    user: {
+      username: undefined,
+      password: undefined,
     },
-    host:"be868968"
+    host: '6ca557dc',
   };
 
   login = () => {
-
     let {user, host} = this.state;
 
     if (!user.username && !user.password) {
       return Alert.alert('Error', 'fill the blanks');
     }
+
+    user.gethash = true
 
     fetch(`http://${host}.ngrok.io/api/login`, {
       headers: {
@@ -48,13 +49,14 @@ class Login extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        let {user} = json;
-        Alert.alert('Success', `the user: ${user.name} is logged`,[
-          {text:"Okay", onPress:()=>this.props.navigation.navigate("Profile", {user})}
-        ]);
+        let {token} = json;
+        Alert.alert('Success', `the user: ${user.name} is logged`, [{
+            text: 'Okay',
+            onPress: () => this.props.navigation.navigate('Profile', {token})
+          }]);
       })
       .catch(err => {
-        Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
+        Alert.alert('Error', `Username/Password mismatch: ${err}`, [{text: 'Okay'}]);
       });
   };
 
@@ -67,7 +69,7 @@ class Login extends Component {
           source={require('./../assets/pictures/niffler_login.jpg')}
         />
         <Text style={styles.title}>Login</Text>
-    
+
         <TextInput
           style={styles.input}
           placeholder="username"
@@ -87,26 +89,24 @@ class Login extends Component {
         />
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
-            <Button 
-            title="back" 
-            color="red"
-            onPress={()=>this.props.navigation.navigate("Welcome")}
+            <Button
+              title="back"
+              color="red"
+              onPress={() => this.props.navigation.navigate('Welcome')}
             />
           </View>
           <View style={styles.button}>
-            <Button 
-            title="Login"
-            color="#DFBD54"
-            onPress={()=>this.login()}
-             />
+            <Button
+              title="Login"
+              color="#DFBD54"
+              onPress={() => this.login()}
+            />
           </View>
         </View>
       </View>
-
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   screen: {
@@ -128,18 +128,18 @@ const styles = StyleSheet.create({
     height: 40,
     width: 250,
     backgroundColor: '#AFAFAF',
-    paddingHorizontal:10
+    paddingHorizontal: 10,
   },
   buttonContainer: {
-    width:300,
+    width: 300,
     margin: 10,
     flexDirection: 'row',
-    justifyContent: "space-around",
+    justifyContent: 'space-around',
   },
-  button:{
-      width:100,
-      justifyContent:"space-between"
-  }
+  button: {
+    width: 100,
+    justifyContent: 'space-between',
+  },
 });
 
 export default Login;

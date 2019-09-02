@@ -7,8 +7,8 @@ var secret = "Niffler_Gloables_2019";
 exports.ensureAuth = function(req, res, next) {
   if (!req.headers.authorization) {
     return res
-      .status(403)
-      .send({ message: "La peticion no tiene la cabecera" });
+    .status(403)
+    .send({ message: "La peticion no tiene la cabecera" });
   }
   var token = req.headers.authorization.replace(/['"]+/g, "");
   try {
@@ -25,3 +25,21 @@ exports.ensureAuth = function(req, res, next) {
 
   next();
 };
+
+exports.getUserReq = function(req){
+  if(!req.headers.authorization)
+    return undefined
+  var token = req.headers.authorization.replace(/['"]+/g, "");
+  try {
+    var payload = jwt.decode(token, secret);
+
+    if (payload.exp <= moment().unix()) {
+      return undefined
+    }
+  } catch (ex) {
+    console.log(ex);
+    return undefined
+  }
+
+  return payload //user
+}

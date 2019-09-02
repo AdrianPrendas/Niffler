@@ -23,7 +23,7 @@ function save_user(req, res) {
         // Guardar el usuario
         user.save((err, userStored) => {
           if (err) {
-            res.status(500).send({ message: "Error al guardar el usuario" });
+            res.status(500).send({ message: err.errmsg });
           } else {
             if (!userStored) {
               res

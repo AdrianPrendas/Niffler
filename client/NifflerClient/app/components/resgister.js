@@ -30,7 +30,7 @@ class Register extends Component {
       email:undefined,
       password:undefined
     },
-    host:"be868968"
+    host:"6ca557dc"
   };
 
   register = () => {
