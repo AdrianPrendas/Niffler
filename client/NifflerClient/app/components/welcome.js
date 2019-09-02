@@ -1,9 +1,28 @@
 import React, { Component } from 'react';
 
-import {View, Text,Button, Alert} from 'react-native';
+import {View, Text, Button, Alert, AsyncStorage} from 'react-native';
+
+
 
 class Welcome extends Component {
     state = {  }
+
+    componentDidMount(){
+      this._retrieveData()
+    }
+
+    _retrieveData = async () => {
+      try {
+        const userString = await AsyncStorage.getItem('user');
+        if (userString) {
+          let user = JSON.parse(userString)
+          this.props.navigation.navigate("Profile", {user})
+        }
+      } catch (error) {
+        Alert.alert('Error', `${error}`, [{text: 'Okay'}]);
+      }
+    };
+
     render() { 
         return (
             <View style={{
@@ -13,15 +32,15 @@ class Welcome extends Component {
             }}>
                 <View style={{margin:10}}>
                 <Button 
-                title="Login"
-                onPress={()=>this.props.navigation.navigate("Gateway")}
+                title="Sing In"
+                onPress={()=>this.props.navigation.navigate("Login")}
               />
                 </View>
               
               <View style={{margin:10}}>
               <Button 
                 title="Sing Up"
-                onPress={()=>Alert.alert("Sing Up")}
+                onPress={()=>this.props.navigation.navigate("Register")}
               />
               </View>
             </View>

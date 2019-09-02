@@ -22,21 +22,24 @@ import {
 });
 */
 
-class Register extends Component {
+class Login extends Component {
   state = {
     user:{
-      name:undefined,
       username:undefined,
-      email:undefined,
       password:undefined
     },
     host:"be868968"
   };
 
-  register = () => {
+  login = () => {
+
     let {user, host} = this.state;
 
-    fetch(`http://${host}.ngrok.io/api/register`, {
+    if (!user.username && !user.password) {
+      return Alert.alert('Error', 'fill the blanks');
+    }
+
+    fetch(`http://${host}.ngrok.io/api/login`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -45,48 +48,29 @@ class Register extends Component {
     })
       .then(res => res.json())
       .then(json => {
-        let {user} = json
-        Alert.alert('Success', `${user.username} registered`,[{text:"okay", onPress:()=>this.props.navigation.navigate("Login")}]);
+        let {user} = json;
+        Alert.alert('Success', `the user: ${user.name} is logged`,[
+          {text:"Okay", onPress:()=>this.props.navigation.navigate("Profile", {user})}
+        ]);
       })
       .catch(err => {
-        Alert.alert('Error', `cant not registered: ${err}`, [{text: 'Okay'}]);
+        Alert.alert('Error', `Username/Password mismatch`, [{text: 'Okay'}]);
       });
-
   };
 
   render() {
     return (
-      <SafeAreaView style={styles.screen}>
+      <View style={styles.screen}>
         <Text style={styles.title}>Niffler</Text>
         <Image
           style={styles.img}
-          source={require('./../assets/pictures/niffler_register.jpg')}
+          source={require('./../assets/pictures/niffler_login.jpg')}
         />
-        <Text style={styles.title}>Register</Text>
-       
-        <TextInput
-          style={styles.input}
-          placeholder="name"
-          placeholderTextColor="white"
-          onChangeText={text =>
-            this.setState({user: {...this.state.user, name: text}})
-          }
-          value={this.state.user.name}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="email"
-          placeholderTextColor="white"
-          keyboardType="email-address"
-          onChangeText={text =>
-            this.setState({user: {...this.state.user, email: text}})
-          }
-          value={this.state.user.email}
-        />
+        <Text style={styles.title}>Login</Text>
+    
         <TextInput
           style={styles.input}
           placeholder="username"
-          placeholderTextColor="white"
           onChangeText={text =>
             this.setState({user: {...this.state.user, username: text}})
           }
@@ -95,7 +79,6 @@ class Register extends Component {
         <TextInput
           style={styles.input}
           placeholder="password"
-          placeholderTextColor="white"
           secureTextEntry={true}
           onChangeText={text =>
             this.setState({user: {...this.state.user, password: text}})
@@ -112,13 +95,13 @@ class Register extends Component {
           </View>
           <View style={styles.button}>
             <Button 
-            title="register"
+            title="Login"
             color="#DFBD54"
-            onPress={()=>this.register()}
+            onPress={()=>this.login()}
              />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
 
     );
   }
@@ -128,7 +111,7 @@ class Register extends Component {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0F7B47',
+    backgroundColor: '#CCCCCC',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -139,14 +122,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontFamily: 'Shojumaru-Regular',
-    color: 'white',
   },
   input: {
     marginTop: 10,
     height: 40,
     width: 250,
-    backgroundColor: '#47A574',
-    color:"white",
+    backgroundColor: '#AFAFAF',
     paddingHorizontal:10
   },
   buttonContainer: {
@@ -161,4 +142,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Register;
+export default Login;

@@ -18,6 +18,9 @@ import InputScreen from './app/components/inputScreen';
 import Profile from './app/components/profile';
 import Settings from './app/components/settings';
 
+import Register from "./app/components/resgister"
+import Login from "./app/components/Login"
+
 
 
 
@@ -64,8 +67,9 @@ const AppSwitchNavigation = createSwitchNavigator({
   Welcome:{screen:Welcome},
   Dashboard:{screen:AppDrawerNavigator},
   Gateway: {screen: Gateway},
-  //Menu: {screen: Menu},
-  //Main:{screen:Main},
+  Register,
+  Login
+
 });
 
 const AppContainer = createAppContainer(AppSwitchNavigation);

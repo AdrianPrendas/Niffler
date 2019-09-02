@@ -1,28 +1,42 @@
 import React, {Component} from 'react';
 
-import {View, Text} from 'react-native';
+import {View, Text, AsyncStorage, Alert, Button} from 'react-native';
 
 import MyStyleSheet from './css/styles';
 
 class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: {
-        _id: undefined,
-        name: undefined,
-        username: undefined,
-        email: undefined,
-        password: undefined,
-        ...props.user,
-      },
-    };
+
+    state = {
+      user: {}
+    }
+  
+
+  componentDidMount(){
+    let user = this.props.navigation.getParam("user")
+    this.setState({user})
+    this._storeData(user)
   }
 
-  componentDidMount() {
-    return
-    let {user} = this.props.navigation.state.params;
-    this.setState({user});
+  _storeData = async (user) => {
+    try {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      Alert.alert('Error', `Cannot storage user in AsyncStorage`, [{text: 'Okay'}]);
+    }
+  };
+
+  logout = async()=>{
+    try {
+      await AsyncStorage.removeItem('user',(err)=>{
+        if(err)
+          Alert.alert('Error', `Cannot storage user in AsyncStorage: ${err}`, [{text: 'Okay'}]);
+        else
+          this.setState({user:undefined})
+          this.props.navigation.navigate("Welcome")
+      });
+    } catch (error) {
+      Alert.alert('Error', `Cannot storage user in AsyncStorage: ${error}`, [{text: 'Okay'}]);
+    }
   }
 
   render() {
@@ -33,8 +47,11 @@ class Profile extends Component {
         <View>
           
           <View>
-           
             <Text>{JSON.stringify(this.state.user,undefined,2)}</Text>
+            <Button
+              title="logout"
+              onPress={()=>this.logout()}
+            />
           </View>
         </View>
       </View>
