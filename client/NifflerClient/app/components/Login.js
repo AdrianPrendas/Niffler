@@ -28,7 +28,7 @@ class Login extends Component {
       username: undefined,
       password: undefined,
     },
-    host: '6ca557dc',
+    host: 'eeaca04c',
   };
 
   login = () => {
@@ -52,13 +52,14 @@ class Login extends Component {
         let {token} = json;
         Alert.alert('Success', `the user: ${user.name} is logged`, [{
             text: 'Okay',
-            onPress: () => this.props.navigation.navigate('Profile', {token})
+            onPress: () => this.props.navigation.navigate('Profile',{token})
           }]);
       })
       .catch(err => {
         Alert.alert('Error', `Username/Password mismatch: ${err}`, [{text: 'Okay'}]);
       });
   };
+  
 
   render() {
     return (

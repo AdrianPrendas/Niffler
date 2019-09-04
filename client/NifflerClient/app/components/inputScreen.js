@@ -1,6 +1,14 @@
 import React, {Component} from 'react';
 
-import {View, Text, Button, ScrollView, Alert, Modal} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  ScrollView,
+  Alert,
+  Modal,
+  AsyncStorage,
+} from 'react-native';
 
 import MyTextInput from './myTextInut';
 
@@ -8,19 +16,61 @@ import MyStyleSheet from './css/styles';
 
 class InputScreen extends Component {
   state = {
+    host: 'eeaca04c',
     registers: [],
     showInputModal: false,
-    n:0,
     amount: 0,
-    description: '',
-    edited: undefined
+    description: undefined,
+    _id: undefined,
   };
 
-  createRegister(register) {
+  componentDidMount() {
+    this.loadTable()
+
+  }
+
+  retrieveToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        return token;
+      }
+    } catch (error) {
+      Alert.alert('Error', `${error}`, [{text: 'Okay'}]);
+    }
+  };
+
+  loadTable() {
+    this.retrieveToken()
+      .then(token => {
+        fetch(`http://${this.state.host}.ngrok.io/api/find-all-transactions`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          method: 'GET',
+        })
+          .then(res => res.json())
+          .then(json => {
+            let {transactions} = json;
+            transactions = transactions.map(t => {
+              t.createdAt = new Date(t.createdAt);
+              return t;
+            });
+            this.setState({registers: transactions});
+          })
+          .catch(err => {
+            Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+          });
+      })
+      .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+  }
+
+  createRegister(n, register) {
     return (
       <View style={MyStyleSheet.row}>
         <View style={[MyStyleSheet.col, MyStyleSheet.col1]}>
-          <Text>{register.n}</Text>
+          <Text>{n}</Text>
         </View>
         <View style={[MyStyleSheet.col, MyStyleSheet.col2]}>
           <Text>₡{register.amount}</Text>
@@ -29,7 +79,11 @@ class InputScreen extends Component {
           <Text>{register.description}</Text>
         </View>
         <View style={[MyStyleSheet.col, MyStyleSheet.col4]}>
-          <Text>{register.dateTime.getHours()+":"+register.dateTime.getMinutes()}</Text>
+          <Text>
+            {register.createdAt.getHours() +
+              ':' +
+              register.createdAt.getMinutes()}
+          </Text>
         </View>
         <View style={[MyStyleSheet.col, MyStyleSheet.col5]}>
           <View
@@ -50,43 +104,81 @@ class InputScreen extends Component {
   }
 
   add() {
-    let {registers, n, amount, description} = this.state
+    let {amount, description} = this.state;
+    let register = {amount, description};
 
-    registers.push({n,amount,description,dateTime: new Date(Date.now()) })
-
-    this.setState({registers, showInputModal:false, n:n+1, amount:0, description:""})
+    this.retrieveToken().then(token => {
+      fetch(`http://${this.state.host}.ngrok.io/api/save-transaction`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        method: 'POST',
+        body: JSON.stringify(register),
+      })
+        .then(res => res.json())
+        .then(json => {
+          this.setState({showInputModal: false, description:"", amount:0});
+          this.loadTable();
+        })
+        .catch(err => {
+          Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+        });
+    });
   }
 
-  edited(){
+  edited() {
+    let {_id, amount, description, owner, createdAT, updatedAt, host} = this.state;
+    let register = {amount, description, owner};
 
-    let {registers, amount, description, edited} = this.state
-
-    registers = registers.filter(r => r.n != edited)
-
-    registers.push({n:edited,amount,description,dateTime: new Date(Date.now()) })
-
-    registers = registers.sort((a,b)=>a.n-b.n)
-
-    this.setState({registers, showInputModal:false, amount:0, description:"", edited: undefined})
-
-
+    this.retrieveToken().then(token => {
+      fetch(`http://${host}.ngrok.io/api/update-transaction/${_id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        method: 'PUT',
+        body: JSON.stringify(register),
+      })
+        .then(res => res.json())
+        .then(json => {
+          this.setState({showInputModal: false, description:"", amount:0, _id:undefined});
+          this.loadTable();
+        })
+        .catch(err => {
+          Alert.alert('edited err', `${err}`, [{text: 'Okay'}]);
+        });
+    });
   }
-
 
   edit(register) {
-
-    let {n, amount, description} = register
-
-    this.setState({showInputModal:true, edited:n, amount, description })
+    this.setState({showInputModal:true, ...register});
   }
 
   del(register) {
-    let {registers} = this.state
-    registers = registers.filter(e=>e.n!=register.n)
-    this.setState({registers})
+    let {_id} = register;
+    let {host} = this.state
+    this.retrieveToken().then(token => {
+      fetch(`http://${host}.ngrok.io/api/delete-transaction/${_id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        method: 'DELETE'
+      })
+        .then(res => res.json())
+        .then(json => {
+          this.setState({showInputModal: false, description:"", amount:0, _id:undefined});
+          this.loadTable();
+        })
+        .catch(err => {
+          Alert.alert('edited err', `${err}`, [{text: 'Okay'}]);
+        });
+    });
   }
 
   render() {
+    let {_id, amount, description, registers } = this.state
     return (
       <View style={MyStyleSheet.inputScreen}>
         <View style={[MyStyleSheet.header, MyStyleSheet.shadow]}>
@@ -104,7 +196,7 @@ class InputScreen extends Component {
         </View>
         <View style={MyStyleSheet.registerContainer}>
           <ScrollView>
-            {this.state.registers.map(r => this.createRegister(r))}
+            {registers.map((r, i) => this.createRegister(i+1, r))}
           </ScrollView>
         </View>
 
@@ -118,7 +210,8 @@ class InputScreen extends Component {
             }}>
             <Text style={MyStyleSheet.textHeader}>Total</Text>
             <Text style={{color: 'white', fontSize: 30}}>
-              ₡{this.state.registers.length!=0&&this.state.registers.map(e => parseInt(e.amount)).reduce((a, b) => a + b)}
+              ₡
+              {registers.length != 0 && registers.map(e => parseInt(e.amount)).reduce((a, b) => a + b)}
             </Text>
           </View>
           <View
@@ -135,22 +228,29 @@ class InputScreen extends Component {
                   placeholder="Amount"
                   keyboardType="numeric"
                   onChangeText={text => this.setState({amount: text})}
-                  value={this.state.amount}
+                  value={amount}
                 />
 
                 <MyTextInput
                   placeholder="Description"
                   onChangeText={text => this.setState({description: text})}
-                  value={this.state.description}
+                  value={description}
                 />
-                <View style={{flexDirection:"row", justifyContent:"space-between", width:100}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: 100,
+                  }}>
                   <Button
                     title="Back"
                     onPress={() => this.setState({showInputModal: false})}
                   />
-                  <Button 
-                  title="add" 
-                  onPress={() => !this.state.edited ? this.add(): this.edited()} 
+                  <Button
+                    title="add"
+                    onPress={() =>
+                      _id ?this.edited(): this.add()
+                    }
                   />
                 </View>
               </View>

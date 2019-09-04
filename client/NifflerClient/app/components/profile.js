@@ -6,16 +6,14 @@ import MyStyleSheet from './css/styles';
 
 class Profile extends Component {
 
-    state = {
-      toke:""
-    }
-  
+  state={
+    toke:""
+  }
 
   componentDidMount(){
     let token = this.props.navigation.getParam("token")
-
-    this.setState({token})
     this._storeData(token)
+    this.setState({token})
   }
 
   _storeData = async (token) => {
