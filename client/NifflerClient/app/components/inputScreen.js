@@ -16,7 +16,7 @@ import MyStyleSheet from './css/styles';
 
 class InputScreen extends Component {
   state = {
-    host: 'eeaca04c',
+    host: 'cad65524',
     registers: [],
     showInputModal: false,
     amount: 0,

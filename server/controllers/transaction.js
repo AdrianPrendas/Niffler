@@ -24,7 +24,7 @@ function save_transaction(req, res) {
     if (err)
       res.status(500).send({ message:  `Error al almacenar la transaccion: ${err}` });
     else
-        res.status(200).send({ transaction: transaction });
+        res.status(200).send({ message: transaction });
   });
 }
 
