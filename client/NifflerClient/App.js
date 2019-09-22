@@ -9,14 +9,13 @@ import {
 
 import {Button} from 'react-native';
 
-import Gateway from './app/components/gateway';
-import Menu from './app/components/menu';
-import Main from './app/components/main';
+
 import DashBoard from './app/components/dashboard';
 import Welcome from './app/components/welcome';
-import InputScreen from './app/components/inputScreen';
+import Today from './app/components/today';
 import Profile from './app/components/profile';
 import Settings from './app/components/settings';
+import Week from './app/components/week';
 
 import Register from "./app/components/resgister"
 import Login from "./app/components/Login"
@@ -26,7 +25,7 @@ import Login from "./app/components/Login"
 
 
 const DashBoardTabNavigator = createBottomTabNavigator({
-  InputScreen,Profile,Settings
+  Today,Week,Profile,Settings
 },
 {
   navigationOptions:({navigation})=>{
@@ -37,6 +36,12 @@ const DashBoardTabNavigator = createBottomTabNavigator({
       headerLeftContainerStyle:{marginLeft:20}
     }
   },
+  tabBarOptions:{
+    activeBackgroundColor:"#BDBDBD",
+    activeTintColor :"white",
+    tabStyle :{paddingBottom:15}
+
+  }
   
 }
 )
@@ -59,14 +64,12 @@ const AppDrawerNavigator = createDrawerNavigator({
   DashBoard: {
     screen: DashBoardStackNavigator
   },
-  InputScreen,Profile,Settings, Main
+  Today,Week,Profile,Settings
 })
-
 
 const AppSwitchNavigation = createSwitchNavigator({
   Welcome:{screen:Welcome},
   Dashboard:{screen:AppDrawerNavigator},
-  Gateway: {screen: Gateway},
   Register,
   Login
 

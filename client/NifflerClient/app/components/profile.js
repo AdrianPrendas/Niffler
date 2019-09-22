@@ -7,16 +7,39 @@ import MyStyleSheet from './css/styles';
 class Profile extends Component {
 
   state={
-    toke:""
+    toke:"",
+    host: "niffler-rest-api.herokuapp.com",
+    user:undefined
   }
 
   componentDidMount(){
     let token = this.props.navigation.getParam("token")
-    this._storeData(token)
+    this.storeToken(token)
     this.setState({token})
+    this.loadUserData(token);
   }
 
-  _storeData = async (token) => {
+  loadUserData(token){
+    let {host} = this.state
+    fetch(`http://${host}/api/who-i-am`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+      method: 'GET',
+    })
+      .then(res =>res.json())
+      .then(json => {
+        let {user} = json;
+       this.setState({user})
+      })
+      .catch(err => {
+        Alert.alert('Error', `Username/Password mismatch: ${err}`, [{text: 'Okay'}]);
+      });
+
+  }
+
+  storeToken = async (token) => {
     try {
       await AsyncStorage.setItem('token', token);
     } catch (error) {
@@ -40,17 +63,35 @@ class Profile extends Component {
   }
 
   render() {
+    let {user, token} = this.state
     return (
-      <View style={MyStyleSheet.dafault}>
-        <Text>Profile screen</Text>
+      <View style={{flex:1}}>
 
-        <View>
-          <Text>{this.state.token}</Text>
-          <Button
-              title="logout"
-              onPress={()=>this.logout()}
-            />
+        <View style={{flex:1}}>
+          <View style={{flex:1, flexDirection:"row", padding:20}}>
+          <View style={{flex:1}}>
+              <Text>{token && token}</Text>
+            </View>
+            <View style={{flex:1}}>
+              <Text>{user && "Name: " + user.name}</Text>
+              <Text>{user && "Username: " + user.username}</Text>
+              <Text>{user && "Email: " + user.email}</Text>
+            </View>
+          </View>
         </View>
+
+        <View style={{flex:1}}>
+
+          <View style={{padding:20}}>
+            <Button
+                title="logout"
+                onPress={()=>this.logout()}
+              />
+          </View>
+
+        </View>
+
+        
       </View>
     );
   }

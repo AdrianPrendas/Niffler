@@ -14,9 +14,9 @@ import MyTextInput from './myTextInut';
 
 import MyStyleSheet from './css/styles';
 
-class InputScreen extends Component {
+class Today extends Component {
   state = {
-    host: 'cad65524',
+    host: "niffler-rest-api.herokuapp.com",
     registers: [],
     showInputModal: false,
     amount: 0,
@@ -43,7 +43,7 @@ class InputScreen extends Component {
   loadTable() {
     this.retrieveToken()
       .then(token => {
-        fetch(`http://${this.state.host}.ngrok.io/api/find-all-transactions`, {
+        fetch(`http://${this.state.host}/api/find-all-transactions`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: token,
@@ -106,9 +106,10 @@ class InputScreen extends Component {
   add() {
     let {amount, description} = this.state;
     let register = {amount, description};
+    let {host} = this.state
 
     this.retrieveToken().then(token => {
-      fetch(`http://${this.state.host}.ngrok.io/api/save-transaction`, {
+      fetch(`http://${host}/api/save-transaction`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: token,
@@ -118,6 +119,9 @@ class InputScreen extends Component {
       })
         .then(res => res.json())
         .then(json => {
+          let {transaction, message} = json
+          if(message)
+            throw message
           this.setState({showInputModal: false, description:"", amount:0});
           this.loadTable();
         })
@@ -132,7 +136,7 @@ class InputScreen extends Component {
     let register = {amount, description, owner};
 
     this.retrieveToken().then(token => {
-      fetch(`http://${host}.ngrok.io/api/update-transaction/${_id}`, {
+      fetch(`http://${host}/api/update-transaction/${_id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: token,
@@ -159,7 +163,7 @@ class InputScreen extends Component {
     let {_id} = register;
     let {host} = this.state
     this.retrieveToken().then(token => {
-      fetch(`http://${host}.ngrok.io/api/delete-transaction/${_id}`, {
+      fetch(`http://${host}/api/delete-transaction/${_id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: token,
@@ -196,7 +200,7 @@ class InputScreen extends Component {
         </View>
         <View style={MyStyleSheet.registerContainer}>
           <ScrollView>
-            {registers.map((r, i) => this.createRegister(i+1, r))}
+            {registers.length !=0 && registers.map((r, i) => this.createRegister(i+1, r))}
           </ScrollView>
         </View>
 
@@ -222,7 +226,7 @@ class InputScreen extends Component {
             />
             <Modal visible={this.state.showInputModal}>
               <View style={MyStyleSheet.dafault}>
-                <Text>New Register</Text>
+                <Text>{this.state._id?"Edit Register":"New Register"}</Text>
 
                 <MyTextInput
                   placeholder="Amount"
@@ -247,7 +251,7 @@ class InputScreen extends Component {
                     onPress={() => this.setState({showInputModal: false})}
                   />
                   <Button
-                    title="add"
+                    title={this.state._id?"edit":"add"}
                     onPress={() =>
                       _id ?this.edited(): this.add()
                     }
@@ -262,4 +266,4 @@ class InputScreen extends Component {
   }
 }
 
-export default InputScreen;
+export default Today;

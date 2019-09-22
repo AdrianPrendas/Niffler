@@ -30,13 +30,21 @@ class Register extends Component {
       email:undefined,
       password:undefined
     },
-    host:"cad65524"
+    host: "niffler-rest-api.herokuapp.com",
+    emailErr:undefined
   };
 
   register = () => {
     let {user, host} = this.state;
 
-    fetch(`http://${host}.ngrok.io/api/register`, {
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(user.email)){
+      this.setState({emailErr:true})
+      return false
+    }
+    
+    //return
+
+    fetch(`http://${host}/api/register`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -45,13 +53,16 @@ class Register extends Component {
     })
       .then(res => res.json())
       .then(json => {
+        if(json.message){
+          throw json.message 
+        }
         let {user} = json
         Alert.alert('Success', `${user.username} registered`,[{text:"okay", onPress:()=>this.props.navigation.navigate("Login")}]);
       })
       .catch(err => {
+
         Alert.alert('Error', `cant not registered: ${err}`, [{text: 'Okay'}]);
       });
-
   };
 
   render() {
@@ -74,7 +85,7 @@ class Register extends Component {
           value={this.state.user.name}
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input, {color:this.state.emailErr?"red":"white"}]}
           placeholder="email"
           placeholderTextColor="white"
           keyboardType="email-address"
@@ -87,9 +98,7 @@ class Register extends Component {
           style={styles.input}
           placeholder="username"
           placeholderTextColor="white"
-          onChangeText={text =>
-            this.setState({user: {...this.state.user, username: text}})
-          }
+          onChangeText={text =>this.setState({user: {...this.state.user, username: text}})}
           value={this.state.user.username}
         />
         <TextInput
@@ -97,9 +106,7 @@ class Register extends Component {
           placeholder="password"
           placeholderTextColor="white"
           secureTextEntry={true}
-          onChangeText={text =>
-            this.setState({user: {...this.state.user, password: text}})
-          }
+          onChangeText={text =>this.setState({user: {...this.state.user, password: text}})}
           value={this.state.user.password}
         />
         <View style={styles.buttonContainer}>
@@ -145,8 +152,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 40,
     width: 250,
-    backgroundColor: '#47A574',
     color:"white",
+    backgroundColor: '#47A574',
     paddingHorizontal:10
   },
   buttonContainer: {

@@ -28,7 +28,7 @@ class Login extends Component {
       username: undefined,
       password: undefined,
     },
-    host: 'cad65524',
+    host: "niffler-rest-api.herokuapp.com",
   };
 
   login = () => {
@@ -40,17 +40,17 @@ class Login extends Component {
 
     user.gethash = true
 
-    fetch(`http://${host}.ngrok.io/api/login`, {
+    fetch(`http://${host}/api/login`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify(user),
     })
-      .then(res => res.json())
+      .then(res =>res.json())
       .then(json => {
         let {token} = json;
-        Alert.alert('Success', `the user: ${user.name} is logged`, [{
+        Alert.alert('Success', `you are in`, [{
             text: 'Okay',
             onPress: () => this.props.navigation.navigate('Profile',{token})
           }]);
