@@ -28,7 +28,7 @@ const DashBoardTabNavigator = createBottomTabNavigator({
   Today:{
     screen:Today,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"add-circle-outline"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={"add"} color={tintColor}/>
     }
   }
   ,Week:{

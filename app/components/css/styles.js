@@ -65,6 +65,10 @@ const MyStyleSheet = StyleSheet.create({
     alignItems: 'center',
     justifyContent: "space-around",
   },
+  col6:{
+    width:50
+  }
+  ,
   shadow:{
     shadowColor: "#000",
     shadowOffset: {
