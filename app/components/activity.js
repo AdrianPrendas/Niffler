@@ -88,13 +88,19 @@ class Activity extends Component {
 
           <View style={{justifyContent:"space-between", flexDirection:"row-reverse",width:100}}>
 
-            <TouchableHighlight onPress={()=>{}}>                
-                <Icon name="close-circle" style={{color:"#D32F2F", fontSize:20}} onPress={() => this.del(register)} />
-            </TouchableHighlight>
-
-            <TouchableHighlight onPress={()=>{}}>
-                <Icon name="create" style={{color:"#FBC02D", fontSize:20}} onPress={()=>this.edit(register)}/>                
-            </TouchableHighlight>
+            
+            <Icon 
+              name="close-circle" 
+              style={{color:"#D32F2F", fontSize:20}}  
+              onPress={() => this.del(register)} 
+            />
+            
+            <Icon 
+              name="create" 
+              style={{color:"#FBC02D", fontSize:20}}
+              onPress={()=>this.edit(register)}
+            />                
+            
                       
           </View>
 
@@ -116,7 +122,7 @@ class Activity extends Component {
             </Text>
           </View>
           
-            {day.map(this.createRegister)}
+            {day.map(r=>this.createRegister(r))}
           
         </View>
       )
