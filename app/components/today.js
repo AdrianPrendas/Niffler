@@ -13,10 +13,11 @@ import {
 
 import Icon from 'react-native-ionicons'
 
-
 import MyTextInput from './myTextInut';
 
 import MyStyleSheet from './css/styles';
+
+
 
 class Today extends Component {
   state = {
@@ -70,40 +71,56 @@ class Today extends Component {
       .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
   }
 
-  createRegister(n, register) {
+  createRegister(register) {
     return (
-      <View style={MyStyleSheet.row}>
-        <View style={[MyStyleSheet.col, MyStyleSheet.col1]}>
-          <Text>{n}</Text>
+        <View style={css.row}>
+
+
+        <View style={css.threeContainer}>
+          <Text style={{ padding:5, color:"#757575",  fontWeight: 'bold'}}>{register.description}</Text>
+          <Text style={{ padding:5, color:"#757575"}}>{register.createdAt.toLocaleTimeString()}</Text>
         </View>
-        <View style={[MyStyleSheet.col, MyStyleSheet.col2]}>
-          <Text>₡{register.amount}</Text>
-        </View>
-        <View style={[MyStyleSheet.col, MyStyleSheet.col3]}>
-          <Text>{register.description}</Text>
-        </View>
-        <View style={[MyStyleSheet.col, MyStyleSheet.col4]}>
-          <Text>
-            {register.createdAt.getHours() +
-              ':' +
-              register.createdAt.getMinutes()}
-          </Text>
-        </View>
-        <View style={[ MyStyleSheet.col5,{flexDirection:"row"}]}>
-        
-            
-              <TouchableHighlight onPress={()=>{}}>
-                  <Icon name="create" style={{color:"#FBC02D", fontSize:20}} onPress={()=>this.edit(register)}/>                
-              </TouchableHighlight>
-            
+
+
+        <View style={css.threeContainer}>  
+
+        <Text style={{fontWeight: 'bold', fontSize:15}}>{register.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Text>
+
+          <View style={{justifyContent:"space-between", flexDirection:"row-reverse",width:100}}>
+
             <TouchableHighlight onPress={()=>{}}>                
-                  <Icon name="close-circle" style={{color:"#D32F2F", fontSize:20}} onPress={() => this.del(register)} />
-              </TouchableHighlight>
-            
-         
+                <Icon name="close-circle" style={{color:"#D32F2F", fontSize:20}} onPress={() => this.del(register)} />
+            </TouchableHighlight>
+
+            <TouchableHighlight onPress={()=>{}}>
+                <Icon name="create" style={{color:"#FBC02D", fontSize:20}} onPress={()=>this.edit(register)}/>                
+            </TouchableHighlight>
+                      
+          </View>
+
         </View>
-      </View>
+        </View>
+      
     );
+  }
+
+  createRegisterDay(day){
+
+    
+      return (
+        <View style={css.day}>
+          <View style={css.total}>
+            <Text style={{color:"#757575",  fontSize: 14,fontWeight: 'bold', paddingLeft:20}}>Total on {day[0].createdAt.toDateString()}</Text>
+            <Text style={{fontSize: 20,fontWeight: 'bold', paddingLeft:50}}>
+            {day.length!=0 && day.map(d=>d.amount).reduce((a,b)=>a+b).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+            </Text>
+          </View>
+          
+            {day.map(this.createRegister)}
+          
+        </View>
+      )
+
   }
 
   add() {
@@ -186,47 +203,51 @@ class Today extends Component {
 
   render() {
     let {_id, amount, description, registers } = this.state
+
+    let minDate = 0
+    let maxDate = 0
+    dayToDay = []
+    
+    if(registers.length!=0){
+      
+      register = registers.sort((a,b)=>a.createdAt.getDate()-b.createdAt.getDate())
+      minDate = registers[0].createdAt.getDate()
+      maxDate = registers[registers.length-1].createdAt.getDate()
+
+      for(let i=minDate;i<=maxDate;i++){
+        let day = registers.filter(r=>r.createdAt.getDate()===i)
+        dayToDay.push(day)
+      }
+      //Alert.alert("day",`${JSON.stringify(dayToDay)}`)
+    }
+    
     return (
-      <View style={MyStyleSheet.inputScreen}>
-        <View style={[MyStyleSheet.header, MyStyleSheet.shadow]}>
-          <Text style={[MyStyleSheet.textHeader, MyStyleSheet.col1]}>N</Text>
-          <Text style={[MyStyleSheet.textHeader, MyStyleSheet.col2]}>
-            Amount
-          </Text>
-          <Text style={[MyStyleSheet.textHeader, MyStyleSheet.col3]}>
-            Description
-          </Text>
-          <Text style={[MyStyleSheet.textHeader, MyStyleSheet.col4]}>Time</Text>
-          <Text style={[MyStyleSheet.textHeader, MyStyleSheet.col5]}>
-            action
-          </Text>
-        </View>
+      <View style={css.screen}>
+
         <View style={MyStyleSheet.registerContainer}>
-          <ScrollView>
-            {registers.length !=0 && registers.map((r, i) => this.createRegister(i+1, r))}
+        <ScrollView ref="scrollView"
+             onContentSizeChange={(width,height) => this.refs.scrollView.scrollTo({y:height})}>
+              
+              {registers && dayToDay.map(d=>this.createRegisterDay(d))}
+            
+              <View style={css.add}>
+                
+                <TouchableHighlight onPress={() => this.setState({showInputModal: true,_id:undefined, description:undefined})}>
+                  <View style={{alignItems:"center"}}>
+                    <Text style={{color:"white",  fontWeight: 'bold',textAlign:"right"}}>ADD NEW REGISTERS</Text>
+                    <Icon name="add" 
+                          color="white"
+                    />
+                  </View>
+                </TouchableHighlight>
+                  
+              </View>
+
           </ScrollView>
         </View>
 
-        <View style={[MyStyleSheet.result, MyStyleSheet.shadow]}>
-          <View
-            style={{
-              flex: 8,
-              backgroundColor: 'blue',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-            }}>
-            <Text style={MyStyleSheet.textHeader}>Total</Text>
-            <Text style={{color: 'white', fontSize: 30}}>
-              ₡
-              {registers.length != 0 && registers.map(e => parseInt(e.amount)).reduce((a, b) => a + b)}
-            </Text>
-          </View>
-          <View
-            style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-            <Button
-              title="add"
-              onPress={() => this.setState({showInputModal: true,_id:undefined, description:undefined})}
-            />
+       
+       
             <Modal visible={this.state.showInputModal}>
               <View style={MyStyleSheet.dafault}>
                 <Text>{this.state._id?"Edit Register":"New Register"}</Text>
@@ -262,11 +283,76 @@ class Today extends Component {
                 </View>
               </View>
             </Modal>
-          </View>
-        </View>
+       
+       
+    
+    
       </View>
     );
   }
 }
+
+import {StyleSheet} from 'react-native';
+
+const css = StyleSheet.create({
+  add:{
+    backgroundColor:"#2196F3",
+    flexDirection: "row",
+    justifyContent:"center",
+    alignContent: "center",
+    alignItems:"center",
+  },
+  total:{
+    flex:1
+  },
+  description:{
+    flex:1
+  },
+  screen:{
+    flex:1,
+    backgroundColor:"#F3F3F3"
+  },
+  header: {
+    flex: 0.3,
+    paddingBottom:10,
+    paddingTop:10,
+    backgroundColor: '#D32F2F',
+    flexDirection: 'row',
+    justifyContent:"space-around"
+  },
+  shadow:{
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
+  },
+  row: {
+    backgroundColor:"#FAFAFA",
+    
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: 'black',
+    borderBottomWidth: 0.5,
+  },
+  threeContainer:{
+    flex:1, 
+    alignItems:"center",
+  },
+  day:{
+    margin:10,
+    backgroundColor:"white",
+    
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.9,
+    borderRadius:5,
+    borderWidth: 1,
+    borderColor: '#fff'
+  }
+
+})
 
 export default Today;
