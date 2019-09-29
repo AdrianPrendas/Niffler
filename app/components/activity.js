@@ -19,7 +19,7 @@ import MyStyleSheet from './css/styles';
 
 
 
-class Today extends Component {
+class Activity extends Component {
   state = {
     host: "niffler-rest-api.herokuapp.com",
     registers: [],
@@ -355,4 +355,4 @@ const css = StyleSheet.create({
 
 })
 
-export default Today;
+export default Activity;

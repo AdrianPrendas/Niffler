@@ -12,7 +12,7 @@ import {Button} from 'react-native';
 
 import DashBoard from './app/components/dashboard';
 import Welcome from './app/components/welcome';
-import Today from './app/components/today';
+import Activity from './app/components/activity';
 import Profile from './app/components/profile';
 import Settings from './app/components/settings';
 import Week from './app/components/week';
@@ -25,8 +25,8 @@ import {TouchableHighlight} from 'react-native';
 
 
 const DashBoardTabNavigator = createBottomTabNavigator({
-  Today:{
-    screen:Today,
+  Activity:{
+    screen:Activity,
     navigationOptions:{
       tabBarIcon:({tintColor})=><Icon name={"add"} color={tintColor}/>
     }
@@ -84,7 +84,7 @@ const AppDrawerNavigator = createDrawerNavigator({
   DashBoard: {
     screen: DashBoardStackNavigator
   },
-  Today,Week,Profile,Settings
+  Activity,Week,Profile,Settings
 })
 
 const AppSwitchNavigation = createSwitchNavigator({
