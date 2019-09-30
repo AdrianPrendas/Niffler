@@ -1,81 +1,105 @@
 import React, {Component} from 'react';
 
-import {View, Text, StyleSheet, Modal, Alert, TextInput, Button} from 'react-native';
+import {View, StyleSheet, Modal, Alert, TextInput, Button} from 'react-native';
+
+import { BarChart, Grid, XAxis } from 'react-native-svg-charts'
+import * as scale from 'd3-scale'
+import { Text } from 'react-native-svg'
 
 
 class Week extends Component {
   state = {
-    month: "September",
-    week:[
-        {date:"22-09-19", day:"Sunday", amount:25},
-        {date:"23-09-19", day:"Monday", amount:35},
-        {date:"24-09-19", day:"Tuesday", amount:15},
-        {date:"25-09-19", day:"Wednesday", amount:5},
-        {date:"26-09-19", day:"Thuesday", amount:55},
-        {date:"27-09-19", day:"Friday", amount:95},
-        {date:"28-09-19", day:"Saturday", amount:125}
-    ]
+  
+  
 
   };
 
-  loadTable(register){
-    return(<View style={{flex:1,borderBottomColor: 'black',borderBottomWidth: 0.5,}}>
-        <View style={{flex:1, flexDirection:"row", justifyContent:"space-around", alignItems:"center"}}>
-
-            <View style={{flex:1, margin:5, padding:5, alignItems:"center", backgroundColor:"#4CAF50"}}>
-                <Text>{register.date}</Text>
-            </View>
-
-            <View style={{flex:1, margin:5, padding:5, alignItems:"center", backgroundColor:"#8BC34A"}}>
-                <Text>{register.day}</Text>
-            </View>
-
-            <View style={{flex:1, margin:5, padding:5, alignItems:"center", backgroundColor:"#F44336"}}>
-                <Text>₡{register.amount}</Text>
-            </View>
-                            
-        </View>
-    </View>)
-  }
-
+ 
   render() {
-      let {month,week} = this.state
+ 
+    const data = [
+      {
+          value: 10,
+          label: 'S',
+      },
+      {
+          value: 1,
+          label: 'M',
+      },
+      {
+          value: 30,
+          label: 'T',
+      },
+      {
+          value: 40,
+          label: 'W',
+      },
+      {
+          value: 50,
+          label: 'T',
+      },
+      {
+        value: 60,
+        label: 'F',
+    },
+    {
+      value: 100,
+      label: 'S',
+  },
+  ]
+ const CUT_OFF = 20
+  const Labels = ({ x, y, bandwidth, data }) => (
+    data.map((value, index) => (
+        <Text
+            key={ index }
+            x={ x(index) + (bandwidth / 2) }
+            y={ value.value < CUT_OFF ? y(value.value) - 10 : y(value.value) + 15 }
+            fontSize={ 14 }
+            fill={ value.value >= CUT_OFF ? 'white' : 'black' }
+            alignmentBaseline={ 'middle' }
+            textAnchor={ 'middle' }
+        >
+            {value.value}
+        </Text>
+    ))
+)
+
+
     return (
       <View style={{flex:1}}>
+        <View style={{flex:1}}>
 
-        <View style={MyStyleSheet.header}>
-            <View style={{flex:6,alignItems:"center",  padding:7}}>
-                <Text style={{color:"white", fontSize:40, alignContent:"center", fontFamily: 'Shojumaru-Regular'}}>{month}</Text>
-            </View>
+          
+
+        </View>
+        <View style={{flex:1}}>
+        <BarChart
+            style={{ height: 200}}
+            data={ data }
+            svg={{ fill:'#009688' }}
+            contentInset={{ bottom: 40, }}
             
-            <View style={{flex:4, flexDirection:"row", justifyContent:"space-around", backgroundColor:"#00796B", alignItems:"center"}}>
-
-                <Text style={MyStyleSheet.textHeader}>Date</Text>
-                <Text style={MyStyleSheet.textHeader}>Day</Text>
-                <Text style={MyStyleSheet.textHeader}>Spended</Text>
-            </View>
+            yAccessor={ ({ item }) => item.value }
+        >
+            <Grid/>
+            <Labels/>
+             <XAxis          
+                    svg={{ fontSize: 10, fontWeight: 'bold' , fill: '#00796B' }}          
+                    style={{ marginTop: 170}}
+                    data={ data }
+                    scale={scale.ScaleBand}
+                    formatLabel={ (value, index) => data[index].label }
+                    labelStyle={ { color: 'black' } }
+                    contentInset={{ left: 20, right: 35 }}
+                />
+        </BarChart>
         </View>
 
-        <View style={{flex:8}}>
-
-            {week.map(e=>this.loadTable(e))}        
-
-        </View>
-
-        <View style={{flex:1, backgroundColor:"#F44336"}}>
-
-            <View style={{flex:1,margin:15, backgroundColor:"#D32F2F",alignItems:"center"}}>
-                <Text style={{color:"white", fontSize:30, alignContent:"center", }}>
-                ₡{week.map(e=>e.amount).reduce((a,b)=>a+b)}
-                </Text>
-            </View>
-            
-        </View>
-
-       
+        
       </View>
-    );
-  }
+        
+    )
+}
 }
 
 const MyStyleSheet = StyleSheet.create({
@@ -83,25 +107,7 @@ const MyStyleSheet = StyleSheet.create({
         flex:2,
         backgroundColor: "#009688",
         justifyContent: "space-around",
-    },
-    textHeader: {
-      color: 'white',
-      fontSize: 20,
-      fontWeight: 'bold',
-      justifyContent:"space-between",
-      paddingLeft:10,
-      paddingRight:10
-    },
-    shadow:{
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.32,
-        shadowRadius: 5.46,
-        elevation: 9,
-      }
+    }
     });
 
 export default Week;
