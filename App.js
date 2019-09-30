@@ -62,7 +62,8 @@ const DashBoardTabNavigator = createBottomTabNavigator({
     activeTintColor :"white",
     showLabel: false,
     tabBarIcon:{tintColor:"white"}
-  }
+  },
+  resetOnBlur :true
 })
 
 
