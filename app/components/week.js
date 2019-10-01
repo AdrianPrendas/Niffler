@@ -104,7 +104,7 @@ class Week extends Component {
 
     let values = [...data];
     values.sort((a, b) => a.value - b.value);
-    let CUT_OFF = data.length != 0 ? data[1].value : 0;
+    let CUT_OFF = data.length != 0 ? values[0].value : 0;
 
     const Values = ({x, y, bandwidth, data}) =>
       data.map((value, index) => (

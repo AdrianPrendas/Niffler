@@ -29,29 +29,29 @@ const DashBoardTabNavigator = createBottomTabNavigator({
   Activity:{
     screen:Activity,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"add"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"add-circle-outline":"add"} color={tintColor}/>
     }
   }
   ,Week:{
     screen:Week,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"stats"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"podium":"stats"} color={tintColor}/>
     }
   },
   Currencies:{
     screen:Currencies,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"analytics"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"analytics":"pulse"} color={tintColor}/>
     }
   },Profile:{
     screen:Profile,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"person"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"person":"body"} color={tintColor}/>
     }
   },Settings:{
     screen:Settings,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={"settings"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"settings":"build"} color={tintColor}/>
     }
   }
 },
@@ -65,7 +65,8 @@ const DashBoardTabNavigator = createBottomTabNavigator({
     }
   },
   tabBarOptions:{
-    activeBackgroundColor:"#DDDD",
+    inactiveTintColor :"#757575",
+    activeBackgroundColor:"#757575",
     activeTintColor :"white",
     showLabel: false,
     tabBarIcon:{tintColor:"white"}
