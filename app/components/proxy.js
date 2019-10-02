@@ -4,7 +4,7 @@ import {
   } from 'react-native';
 
 class Proxy{
-    
+
     state = {
         host: "niffler-rest-api.herokuapp.com"
     }
@@ -18,7 +18,55 @@ class Proxy{
         } catch (error) {
           Alert.alert('Error', `${error}`, [{text: 'Okay'}]);
         }
-      };
+    };
+
+    storeToken = async (token) => {
+        try {
+          await AsyncStorage.setItem('token', token);
+        } catch (error) {
+          Alert.alert('Error', `Cannot storage token in AsyncStorage`, [{text: 'Okay'}]);
+        }
+    };
+
+    logout = async(callback)=>{
+        try {
+          await AsyncStorage.removeItem('token',(err)=>{
+            if(err)
+              Alert.alert('Error', `Can not remove token from AsyncStorage: ${err}`, [{text: 'Okay'}]);
+            else{
+                callback()
+            }
+          });
+        } catch (error) {
+          Alert.alert('Error', `Can not remove Token from AsyncStorage: ${error}`, [{text: 'Okay'}]);
+        }
+    };
+
+    loadUser(callback){
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+        fetch(`http://${host}/api/who-i-am`, {
+            headers: {
+               'Content-Type': 'application/json',
+                Authorization: token,
+            },
+            method: 'GET',
+        })
+        .then(res =>res.json())
+        .then(json => {
+           let {user} = json;
+           callback(user)
+        })
+        .catch(err => {
+            Alert.alert('Error', `Username/Password mismatch: ${err}`, [{text: 'Okay'}]);
+        });
+
+          
+        }).catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+    
+    }
     
 
     save(register,callback){
