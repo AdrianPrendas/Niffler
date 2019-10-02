@@ -32,8 +32,6 @@ class Activity extends Component {
   };
 
   componentDidMount() {
-    this.loadTransactions();
-    
     this.focusListener = this.props.navigation.addListener('didFocus', () => {
       this.loadTransactions();
     });
@@ -104,12 +102,8 @@ class Activity extends Component {
 
   fillScrollView(registers){
     let jsx = []
-    for (const [_, year] of Object.entries(registers)) {
-      for (const [__, month] of Object.entries(year)) {
-        for (const [___, day] of Object.entries(month)) {
-          jsx.push(this.createRegisterDay(day))
-        }
-      }
+    for (const [_, day] of Object.entries(registers)) {
+      jsx.push(this.createRegisterDay(day))
     }
     return jsx
   }
@@ -161,16 +155,11 @@ class Activity extends Component {
         let month = r.createdAt.getMonth()
         let day = r.createdAt.getDay()
 
-        if(!sort[`${year}`])
-          sort[`${year}`] = {}
-        
-        if(!sort[`${year}`][`${month}`])
-          sort[`${year}`][`${month}`] = {}
-          
-        if(!sort[`${year}`][`${month}`][`${day}`])
-          sort[`${year}`][`${month}`][`${day}`] = [r]
+        if(!sort[`${year}-${month}-${day}`])
+          sort[`${year}-${month}-${day}`] = [r]
         else
-          sort[`${year}`][`${month}`][`${day}`].push(r)
+          sort[`${year}-${month}-${day}`].push(r)
+        
       })
       //Alert.alert("day",`${JSON.stringify(sort,null,2)}`)
     }
