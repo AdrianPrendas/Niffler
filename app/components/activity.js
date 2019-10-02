@@ -17,11 +17,13 @@ import MyTextInput from './myTextInut';
 
 import MyStyleSheet from './css/styles';
 
+import Proxy from "./proxy"
+
 
 
 class Activity extends Component {
   state = {
-    host: "niffler-rest-api.herokuapp.com",
+    proxy: new Proxy(),
     registers: [],
     showInputModal: false,
     amount: 0,
@@ -30,155 +32,109 @@ class Activity extends Component {
   };
 
   componentDidMount() {
-    this.loadTable()
-
+    this.loadTransactions();
+    
+    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+      this.loadTransactions();
+    });
   }
 
-  retrieveToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        return token;
-      }
-    } catch (error) {
-      Alert.alert('Error', `${error}`, [{text: 'Okay'}]);
-    }
-  };
+  componentWillUnmount() {
+    this.focusListener.remove();
+  }
+  
+  loadTransactions() {
+    
+    this.state.proxy.loadTransactions((transactions)=>{
+      this.setState({registers: transactions});
+    })
 
-  loadTable() {
-    this.retrieveToken()
-      .then(token => {
-        fetch(`http://${this.state.host}/api/find-all-transactions`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-          method: 'GET',
-        })
-          .then(res => res.json())
-          .then(json => {
-            let {transactions} = json;
-            transactions = transactions.map(t => {
-              t.createdAt = new Date(t.createdAt);
-              return t;
-            });
-            this.setState({registers: transactions});
-          })
-          .catch(err => {
-            Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
-          });
-      })
-      .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
   }
 
   createRegister(register) {
-    return (
-        <View style={css.row}>
+    return (<View style={css.row}>
 
+              <View style={css.threeContainer}>
+                <Text style={{ padding:5, color:"#757575",  fontWeight: 'bold'}}>{register.description}</Text>
+                <Text style={{ padding:5, color:"#757575"}}>Created at {register.createdAt.toLocaleTimeString()}</Text>
+                {register.updatedAt && <Text style={{ padding:5, color:"#757575", textAlign:"center"}}>Updated on {register.updatedAt.toString().split("G")[0]}</Text>}
+              </View>
 
-        <View style={css.threeContainer}>
-          <Text style={{ padding:5, color:"#757575",  fontWeight: 'bold'}}>{register.description}</Text>
-          <Text style={{ padding:5, color:"#757575"}}>{register.createdAt.toLocaleTimeString()}</Text>
-        </View>
+              <View style={css.threeContainer}>  
 
+                <Text style={{fontWeight: 'bold', fontSize:15}}>{register.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Text>
 
-        <View style={css.threeContainer}>  
+                  <View style={{justifyContent:"space-between", flexDirection:"row-reverse",width:100}}>
+                    
+                    <Icon 
+                      name="close-circle" 
+                      style={{color:"#D32F2F", fontSize:20}}  
+                      onPress={() => this.del(register)} 
+                    />
 
-        <Text style={{fontWeight: 'bold', fontSize:15}}>{register.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Text>
+                    <Icon 
+                      name="create" 
+                      style={{color:"#FBC02D", fontSize:20}}
+                      onPress={()=>this.edit(register)}
+                    />                
+                          
+                  </View>
 
-          <View style={{justifyContent:"space-between", flexDirection:"row-reverse",width:100}}>
-
-            
-            <Icon 
-              name="close-circle" 
-              style={{color:"#D32F2F", fontSize:20}}  
-              onPress={() => this.del(register)} 
-            />
-            
-            <Icon 
-              name="create" 
-              style={{color:"#FBC02D", fontSize:20}}
-              onPress={()=>this.edit(register)}
-            />                
-            
-                      
-          </View>
-
-        </View>
-        </View>
-      
-    );
+              </View>
+            </View>);
   }
 
   createRegisterDay(day){
-
-    
-      return (
-        <View style={css.day}>
-          <View style={css.total}>
-            <Text style={{color:"#757575",  fontSize: 14,fontWeight: 'bold', paddingLeft:20}}>Total on {day[0].createdAt.toDateString()}</Text>
-            <Text style={{fontSize: 20,fontWeight: 'bold', paddingLeft:50}}>
-            {day.length!=0 && day.map(d=>d.amount).reduce((a,b)=>a+b).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-            </Text>
-          </View>
+      return (<View style={css.day}>
+                <View style={css.total}>
+                  <Text style={{color:"#757575",  fontSize: 14,fontWeight: 'bold', paddingLeft:20}}>
+                    Total on {day[0].createdAt.toDateString()}
+                  </Text>
+                  <Text style={{fontSize: 20,fontWeight: 'bold', paddingLeft:50}}>
+                    {day.length!=0 && day.map(d=>d.amount).reduce((a,b)=>a+b).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+                  </Text>
+                </View>
           
-            {day.map(r=>this.createRegister(r))}
-          
-        </View>
+                {day.map(r=>this.createRegister(r))}
+              </View>
       )
 
   }
 
-  add() {
-    let {amount, description} = this.state;
-    let register = {amount, description};
-    let {host} = this.state
 
-    this.retrieveToken().then(token => {
-      fetch(`http://${host}/api/save-transaction`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        },
-        method: 'POST',
-        body: JSON.stringify(register),
-      })
-        .then(res => res.json())
-        .then(json => {
-          let {transaction, message} = json
-          if(message)
-            throw message
-          this.setState({showInputModal: false, description:"", amount:0});
-          this.loadTable();
-        })
-        .catch(err => {
-          Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
-        });
-    });
+  fillScrollView(registers){
+    let jsx = []
+    for (const [_, year] of Object.entries(registers)) {
+      for (const [__, month] of Object.entries(year)) {
+        for (const [___, day] of Object.entries(month)) {
+          jsx.push(this.createRegisterDay(day))
+        }
+      }
+    }
+    return jsx
+  }
+
+  add() {
+    let {amount, description, proxy} = this.state;
+    let register = {amount, description, createdAt: new Date()};
+
+    proxy.save(register,()=>{
+      this.setState({showInputModal: false, description:"", amount:0});
+      this.loadTransactions();
+    })
+
+    
   }
 
   edited() {
-    let {_id, amount, description, owner, createdAT, updatedAt, host} = this.state;
-    let register = {amount, description, owner};
+    let {_id, amount, description, owner, proxy} = this.state;
+    let register = {amount, description, owner, updatedAt: new Date};
 
-    this.retrieveToken().then(token => {
-      fetch(`http://${host}/api/update-transaction/${_id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        },
-        method: 'PUT',
-        body: JSON.stringify(register),
-      })
-        .then(res => res.json())
-        .then(json => {
-          this.setState({showInputModal: false, description:"", amount:0, _id:undefined});
-          this.loadTable();
-        })
-        .catch(err => {
-          Alert.alert('edited err', `${err}`, [{text: 'Okay'}]);
-        });
-    });
+    proxy.editTransaction(_id, register, ()=>{
+      this.setState({showInputModal: false, description:"", amount:0, _id:undefined});
+      this.loadTransactions();
+    })
+
   }
 
   edit(register) {
@@ -186,45 +142,37 @@ class Activity extends Component {
   }
 
   del(register) {
-    let {_id} = register;
-    let {host} = this.state
-    this.retrieveToken().then(token => {
-      fetch(`http://${host}/api/delete-transaction/${_id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        },
-        method: 'DELETE'
-      })
-        .then(res => res.json())
-        .then(json => {
-          this.setState({showInputModal: false, description:"", amount:0, _id:undefined});
-          this.loadTable();
-        })
-        .catch(err => {
-          Alert.alert('edited err', `${err}`, [{text: 'Okay'}]);
-        });
-    });
+    this.state.proxy.deleteTransactions(register._id,()=>{
+      this.loadTransactions();
+    })
   }
 
   render() {
     let {_id, amount, description, registers } = this.state
 
-    let minDate = 0
-    let maxDate = 0
-    dayToDay = []
-    
+    let sort = {}
+
     if(registers.length!=0){
       
-      register = registers.sort((a,b)=>a.createdAt.getDate()-b.createdAt.getDate())
-      minDate = registers[0].createdAt.getDate()
-      maxDate = registers[registers.length-1].createdAt.getDate()
+      registers.sort((a,b)=>a.createdAt-b.createdAt)
 
-      for(let i=minDate;i<=maxDate;i++){
-        let day = registers.filter(r=>r.createdAt.getDate()===i)
-        dayToDay.push(day)
-      }
-      //Alert.alert("day",`${JSON.stringify(dayToDay)}`)
+      registers.forEach(r=>{
+        let year = r.createdAt.getFullYear()
+        let month = r.createdAt.getMonth()
+        let day = r.createdAt.getDay()
+
+        if(!sort[`${year}`])
+          sort[`${year}`] = {}
+        
+        if(!sort[`${year}`][`${month}`])
+          sort[`${year}`][`${month}`] = {}
+          
+        if(!sort[`${year}`][`${month}`][`${day}`])
+          sort[`${year}`][`${month}`][`${day}`] = [r]
+        else
+          sort[`${year}`][`${month}`][`${day}`].push(r)
+      })
+      //Alert.alert("day",`${JSON.stringify(sort,null,2)}`)
     }
     
     return (
@@ -234,7 +182,7 @@ class Activity extends Component {
         <ScrollView ref="scrollView"
              onContentSizeChange={(width,height) => this.refs.scrollView.scrollTo({y:height})}>
               
-              {registers && dayToDay.map(d=>this.createRegisterDay(d))}
+              {registers.length!=0  && this.fillScrollView(sort)}
             
               <View style={css.add}>
                 

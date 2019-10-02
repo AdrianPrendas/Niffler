@@ -1,0 +1,132 @@
+import {
+    Alert,
+    AsyncStorage,
+  } from 'react-native';
+
+class Proxy{
+    
+    state = {
+        host: "niffler-rest-api.herokuapp.com"
+    }
+
+    retrieveToken = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+          if (token) {
+            return token;
+          }
+        } catch (error) {
+          Alert.alert('Error', `${error}`, [{text: 'Okay'}]);
+        }
+      };
+    
+
+    save(register,callback){
+        
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/save-transaction`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'POST',
+                body: JSON.stringify(register),
+            })
+            .then(res => res.json())
+            .then(json => {
+                let {transaction, message} = json
+                if(message)
+                  throw message
+                callback()
+            })
+            .catch(err => {
+                Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+            });
+
+        })
+        .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+    }
+
+    loadTransactions(callback){
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/find-all-transactions`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'GET',
+            })
+            .then(res => res.json())
+            .then(json => {
+                let {transactions} = json;
+                transactions = transactions.map(t => {
+                    t.createdAt = new Date(t.createdAt);
+                    t.updatedAt = (t.updatedAt? new Date(t.updatedAt):undefined)
+                    return t;
+                });
+
+                callback(transactions)
+            })
+            .catch(err => {
+                Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+            });
+
+        })
+        .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+    }
+
+    editTransaction(_id, register, callback){
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/update-transaction/${_id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'PUT',
+                body: JSON.stringify(register),
+            })
+            .then(res => res.json())
+            .then(json => {    
+                callback()
+              })
+              .catch(err => {
+                Alert.alert('edited err', `${err}`, [{text: 'Okay'}]);
+              });
+          });
+    }
+
+    deleteTransactions(_id, callback){
+        let {host} = this.state
+        
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/delete-transaction/${_id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(json => {
+                callback()
+            })
+            .catch(err => {
+                Alert.alert('del err', `${err}`, [{text: 'Okay'}]);
+            });
+
+        });
+    }
+  
+}
+ 
+export default Proxy;

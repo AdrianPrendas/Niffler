@@ -89,12 +89,15 @@ class Week extends Component {
         let day = registers.filter(r => r.createdAt.getDate() === i);
         dayToDay.push(day);
       }
+      dayToDay = dayToDay.filter(d=>d!=0)//cleaning array from empty values
+      //Alert.alert("day",`${JSON.stringify(dayToDay,null,2)}`)
 
       //reverse = dayToDay.reverse();
 
       data = dayToDay.map(day => {
-        let d = day[0].createdAt.toString().split(' ')[0];
-        let n = day[0].createdAt.toString().split(' ')[2];
+        
+        let d = day[0].createdAt.toString().split(' ')[0]
+        let n = day[0].createdAt.toString().split(' ')[2]
         return {
           label: `${d} ${n}`,
           value: day.map(r => r.amount).reduce((a, b) => a + b),
@@ -104,6 +107,7 @@ class Week extends Component {
 
     let values = [...data];
     values.sort((a, b) => a.value - b.value);
+    
     let CUT_OFF = data.length != 0 ? values[0].value : 0;
 
     const Values = ({x, y, bandwidth, data}) =>
