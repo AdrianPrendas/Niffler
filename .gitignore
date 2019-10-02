@@ -60,3 +60,4 @@ buck-out/
 ios/
 android/
 __tests__/
+package-lock.json

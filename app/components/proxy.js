@@ -68,7 +68,6 @@ class Proxy{
     
     }
     
-
     save(register,callback){
         
         let {host} = this.state
