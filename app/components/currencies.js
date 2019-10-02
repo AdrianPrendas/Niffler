@@ -1,56 +1,48 @@
 import React, {Component} from 'react';
 
-import {View, Text, TouchableOpacity, Modal, Alert, TextInput, Button} from 'react-native';
-
-import MyTextInput from "./myTextInut"
-
-import MyStyleSheet from './css/styles';
+import { AreaChart, Grid } from 'react-native-svg-charts'
+import { Circle, Path } from 'react-native-svg'
 
 class Currencies extends Component {
-  state = {
-    
-    modal: false,
-  };
-
-  add(){
-
-    this.setState({modal: false})
-  }
 
   render() {
+
+    const data = [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
+
+    const Decorator = ({ x, y, data }) => {
+        return data.map((value, index) => (
+            <Circle
+                key={ index }
+                cx={ x(index) }
+                cy={ y(value) }
+                r={ 4 }
+                stroke={ 'rgb(134, 65, 244)' }
+                fill={ 'white' }
+            />
+        ))
+    }
+
+    const Line = ({ line }) => (
+        <Path
+            d={ line }
+            stroke={ 'rgba(134, 65, 244)' }
+            fill={ 'none' }
+        />
+    )
+
     return (
-      <View style={MyStyleSheet.dafault}>
-        <Text>Currencies screen</Text>
-        <Modal visible={this.state.modal}>
-
-          <View style={MyStyleSheet.dafault}>
-          
-          <Text>New Register</Text>
-
-          <MyTextInput
-          placeholder="Amount"
-          keyboardType="numeric"
-          />
-
-          <MyTextInput
-          placeholder="Description"
-          />
-
-
-
-          <Button 
-          title="add"
-          onPress={()=>this.add()}
-          />
-          </View>
-        </Modal>
-        <TouchableOpacity onPress={()=>this.setState({modal: true})}>
-          <Text>Open modal</Text>
-        </TouchableOpacity>
-      </View>
-
-    );
-  }
+        <AreaChart
+            style={{ height: 200, flex:1 }}
+            data={ data }
+            svg={{ fill: 'rgba(134, 65, 244, 0.2)' }}
+            contentInset={{ top: 20, bottom: 30 }}
+        >
+            <Grid/>
+            <Line/>
+            <Decorator/>
+        </AreaChart>
+    )
+}
 }
 
 export default Currencies;
