@@ -173,6 +173,32 @@ class Proxy{
 
         });
     }
+
+    getSymbols(callback){
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/get-symbols`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'GET',
+            })
+            .then(res => res.json())
+            .then(json => {
+                let {symbols} = json;
+
+                callback(symbols)
+            })
+            .catch(err => {
+                Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+            });
+
+        })
+        .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+    }
   
 }
  
