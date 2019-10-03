@@ -199,6 +199,37 @@ class Proxy{
         })
         .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
     }
+
+    exchageType(req,callback){
+        let {host} = this.state
+
+        this.retrieveToken().then(token => {
+
+            fetch(`http://${host}/api/exchange-type`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                method: 'POST',
+                body:JSON.stringify(req)
+            })
+            .then(res => res.json())
+            .then(json => {
+                let {data} = json;
+                data = data.map(r=>{
+                    r.date = new Date(r.date)
+                    return r
+                })
+                data.sort((a,b)=>a.date - b.date)
+                callback(data)
+            })
+            .catch(err => {
+                Alert.alert('Error', `${err}`, [{text: 'Okay'}]);
+            });
+
+        })
+        .catch(err => Alert.alert('Error', `${err}`, [{text: 'Okay'}]));
+    }
   
 }
  
