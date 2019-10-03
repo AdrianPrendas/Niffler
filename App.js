@@ -16,7 +16,7 @@ import Activity from './app/components/activity';
 import Profile from './app/components/profile';
 import Settings from './app/components/settings';
 import Currencies from './app/components/currencies';
-import Week from './app/components/week';
+import Chart from './app/components/chart';
 
 import Register from "./app/components/resgister"
 import Login from "./app/components/Login"
@@ -32,8 +32,8 @@ const DashBoardTabNavigator = createBottomTabNavigator({
       tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"add-circle-outline":"add"} color={tintColor}/>
     }
   }
-  ,Week:{
-    screen:Week,
+  ,Chart:{
+    screen:Chart,
     navigationOptions:{
       tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"podium":"stats"} color={tintColor}/>
     }
@@ -101,7 +101,7 @@ const AppDrawerNavigator = createDrawerNavigator({
   DashBoard: {
     screen: DashBoardStackNavigator
   },
-  Activity,Week,Currencies,Profile,Settings
+  Activity,Chart,Currencies,Profile,Settings
 })
 
 const AppSwitchNavigation = createSwitchNavigator({
