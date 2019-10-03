@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Alert,Button} from 'react-native';
+import {View, Text, StyleSheet, Alert,Button, ScrollView} from 'react-native';
 
 import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
 import {Circle, Path} from 'react-native-svg';
@@ -90,7 +90,7 @@ class Currencies extends Component {
     end_date = end_date ? end_date.toISOString().split("T")[0] : '';
 
     return (
-      <View style={{flex: 1}}>
+      <ScrollView>
 
         <View style={{ flex: 1}}>
 
@@ -118,18 +118,17 @@ class Currencies extends Component {
 
             </View>
             
-            <View style={{ flex: 8,flexDirection:"row"}}>
+            <View style={{ flex: 7}}>
 
                 <View style={{flex:1}}>
 
                     <CalendarPicker
                     onDateChange={this.onStartDateChange}
-                    height="200"
+                    height="300"
                     />
             
                     <View style={{alignItems:"center"}}>
-                        <Text>START DATE</Text>
-                        <Text>{ start_date }</Text>
+                        <Text>START DATE:  { start_date }</Text>
                     </View>
 
                 </View>
@@ -138,24 +137,23 @@ class Currencies extends Component {
 
                     <CalendarPicker
                     onDateChange={this.onEndDateChange}
-                    height="200"
+                    height="300"
                     />
             
                     <View style={{alignItems:"center"}}>
-                        <Text>END DATE</Text>
-                        <Text>{ end_date }</Text>
+                        <Text>END DATE:  { end_date }</Text>
                     </View>
 
                 </View>
             
             </View>
-            <View style={{margin:10}}>
+            <View style={{flex:1,marginLeft:100, marginRight:100}}>
                 <Button title="request" onPress={()=>this.request()}/>
             </View>
             
         </View>
 
-        <View style={{ flex:1,  flexDirection: 'row' }}>
+        <View style={{ height: 400,  flexDirection: 'row' }}>
         <YAxis
                     data={data}
                     style={{ marginBottom: xAxisHeight }}
@@ -184,7 +182,7 @@ class Currencies extends Component {
 
 
         </View>
-    </View>);
+    </ScrollView>);
   }
 }
 

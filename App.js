@@ -85,9 +85,17 @@ const DashBoardStackNavigator = createStackNavigator({
                     <Icon name="menu" onPress={navigation.openDrawer}/>                
                   </TouchableHighlight>
     }
-  }
+  },
+ 
 }
 )
+
+/*
+ headerMode: 'none',
+  navigationOptions: {
+    headerVisible: false,
+  }
+*/
 
 const AppDrawerNavigator = createDrawerNavigator({
   DashBoard: {

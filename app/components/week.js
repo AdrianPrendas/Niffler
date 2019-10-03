@@ -88,7 +88,7 @@ class Week extends Component {
    let dates = [...data];
    dates.sort((a, b) => b.day - a.day);
 
-    let CUT_OFF = data.length == 0 ? 0 : Math.min(...data.map(r=>r.value))
+    let CUT_OFF = data.length == 0 ? 0 : data.map(r=>r.value).reduce((a,b)=>a+b)/data.length
 
     const Values = ({x, y, bandwidth, data}) =>
       data.map((value, index) => (
@@ -111,7 +111,7 @@ class Week extends Component {
           data={dates}
           yAccessor={({index}) => index}
           scale={scale.ScaleBand}
-          contentInset={{top: 10*data.length, bottom: 10*data.length}}
+          contentInset={{top: 5*data.length, bottom: 5*data.length}}
           spacing={0.2}
           numberOfTicks={6}
           formatLabel={(value, index) =>
