@@ -122,27 +122,32 @@ class Currencies extends Component {
 
                 <View style={{flex:1}}>
 
+                    
                     <CalendarPicker
-                    onDateChange={this.onStartDateChange}
-                    height="300"
+                        onDateChange={this.onStartDateChange}
                     />
-            
+
                     <View style={{alignItems:"center"}}>
                         <Text>START DATE:  { start_date }</Text>
                     </View>
+
+                   
+
+                    
+            
 
                 </View>
 
                 <View style={{flex:1}}>
 
-                    <CalendarPicker
-                    onDateChange={this.onEndDateChange}
-                    height="300"
-                    />
-            
+                                
                     <View style={{alignItems:"center"}}>
                         <Text>END DATE:  { end_date }</Text>
                     </View>
+
+                    <CalendarPicker
+                    onDateChange={this.onEndDateChange}
+                    />
 
                 </View>
             

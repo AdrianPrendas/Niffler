@@ -61,7 +61,7 @@ class Week extends Component {
       transactions.forEach(r=>{
         let year = r.createdAt.getFullYear()
         let month = r.createdAt.getMonth()
-        let day = r.createdAt.getDay()
+        let day = r.createdAt.getDate()
 
         if(!sort[`${year}-${month}-${day}`])
           sort[`${year}-${month}-${day}`] = [r]
@@ -111,9 +111,9 @@ class Week extends Component {
           data={dates}
           yAccessor={({index}) => index}
           scale={scale.ScaleBand}
-          contentInset={{top: 5*data.length, bottom: 5*data.length}}
+          contentInset={{top: data.length*2+5, bottom: data.length*2+5}}
           spacing={0.2}
-          numberOfTicks={6}
+          numberOfTicks={data.length}
           formatLabel={(value, index) =>
             reverse[index] ? dates[index].label : 0
           }

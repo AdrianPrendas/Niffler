@@ -51,7 +51,7 @@ const DashBoardTabNavigator = createBottomTabNavigator({
   },Settings:{
     screen:Settings,
     navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"settings":"build"} color={tintColor}/>
+      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"basket":"appstore"} color={tintColor}/>
     }
   }
 },
@@ -86,7 +86,6 @@ const DashBoardStackNavigator = createStackNavigator({
                   </TouchableHighlight>
     }
   },
- 
 }
 )
 

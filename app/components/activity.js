@@ -99,11 +99,62 @@ class Activity extends Component {
 
   }
 
-
-  fillScrollView(registers){
+  createRegistersDays(month){
     let jsx = []
-    for (const [_, day] of Object.entries(registers)) {
-      jsx.push(this.createRegisterDay(day))
+    for (let [dayKey, day] of Object.entries(month)) {
+      if(Array.isArray(day.data))
+        jsx.push(this.createRegisterDay(day.data))
+    }
+    return jsx
+  }
+
+  createRegistersMonths(year){
+    let jsx = []
+    for (let [monthKey, month] of Object.entries(year)) {
+        if(month.total == undefined)
+          break
+        let d = new Date()
+        d.setMonth(parseInt(monthKey))
+        let date = d.toDateString().split(" ")
+        let out = (
+          <View style={css.month}>
+          <View style={css.total}>
+            <Text style={{color:"#757575",  fontSize: 20,fontWeight: 'bold', paddingLeft:20}}>
+              Total on {date[1]} {date[3]}
+            </Text>
+            <Text style={{fontSize: 30,fontWeight: 'bold', paddingLeft:50}}>
+              {parseInt(month.total).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+            </Text>
+          </View>
+    
+          {this.createRegistersDays(month)}
+        </View>
+        )
+        jsx.push(out)
+    }
+    return jsx
+  }
+
+  fillScrollView(data){
+    let jsx = []
+    for (let [yearKey, year] of Object.entries(data)) {
+      let out = (
+        <View style={css.year}>
+          <View style={css.total}>
+            <Text style={{color:"#EAEAEA",  fontSize: 30,fontWeight: 'bold', paddingLeft:20}}>
+              Total on {yearKey}
+            </Text>
+            <Text style={{fontSize: 40,fontWeight: 'bold', paddingLeft:50,color:"white"}}>
+              {parseInt(year.total).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+            </Text>
+          </View>
+    
+          {this.createRegistersMonths(year)}
+        </View>
+      )
+
+     
+      jsx.push(out)
     }
     return jsx
   }
@@ -153,16 +204,55 @@ class Activity extends Component {
       registers.forEach(r=>{
         let year = r.createdAt.getFullYear()
         let month = r.createdAt.getMonth()
-        let day = r.createdAt.getDay()
+        let day = r.createdAt.getDate()
 
-        if(!sort[`${year}-${month}-${day}`])
-          sort[`${year}-${month}-${day}`] = [r]
+        if(!sort[`${year}`])
+          sort[`${year}`] = {total:0}
+
+        if(!sort[`${year}`][`${month}`])
+          sort[`${year}`][`${month}`] = {total:0}
+
+        if(!sort[`${year}`][`${month}`][`${day}`])
+          sort[`${year}`][`${month}`][`${day}`] = {total:0, data:[r]}
         else
-          sort[`${year}-${month}-${day}`].push(r)
+          sort[`${year}`][`${month}`][`${day}`].data.push(r)
         
       })
+
+     
+      
+      
+      for (const [yearKey, yearObj] of Object.entries(sort)) {        
+        let monthSum = 0
+        for (const [monthKey, monthObj] of Object.entries(yearObj)) {
+          let daySum = 0
+          for (const [dayKey, dayObj] of Object.entries(monthObj)) {
+              dayObj.total = Array.isArray(dayObj.data)?dayObj.data.map(r=>r.amount).reduce((a,b)=>a+b):0
+              daySum += dayObj.total != undefined ? dayObj.total: 0
+          } 
+        monthObj.total = daySum
+        monthSum += monthObj.total != undefined ? monthObj.total:0
+        }
+        yearObj.total = monthSum
+      }
+
+     
+      
       //Alert.alert("day",`${JSON.stringify(sort,null,2)}`)
+    
     }
+
+    let AddButton = () => (
+      <View style={css.add}>
+        <TouchableHighlight onPress={() => this.setState({showInputModal: true,_id:undefined, description:undefined})}>
+          <View style={{alignItems:"center"}}>
+            <Text style={{color:"white",  fontWeight: 'bold',textAlign:"right"}}>ADD NEW REGISTERS</Text>
+            <Icon name="add" 
+                  color="white"
+            />
+          </View>
+        </TouchableHighlight>
+      </View>)
     
     return (
       <View style={css.screen}>
@@ -173,18 +263,8 @@ class Activity extends Component {
               
               {registers.length!=0  && this.fillScrollView(sort)}
             
-              <View style={css.add}>
-                
-                <TouchableHighlight onPress={() => this.setState({showInputModal: true,_id:undefined, description:undefined})}>
-                  <View style={{alignItems:"center"}}>
-                    <Text style={{color:"white",  fontWeight: 'bold',textAlign:"right"}}>ADD NEW REGISTERS</Text>
-                    <Icon name="add" 
-                          color="white"
-                    />
-                  </View>
-                </TouchableHighlight>
-                  
-              </View>
+             
+              <AddButton/>
 
           </ScrollView>
         </View>
@@ -236,6 +316,7 @@ class Activity extends Component {
 }
 
 import {StyleSheet} from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 
 const css = StyleSheet.create({
   add:{
@@ -288,14 +369,30 @@ const css = StyleSheet.create({
   day:{
     margin:10,
     backgroundColor:"white",
-    
     borderBottomColor: 'gray',
     borderBottomWidth: 0.9,
     borderRadius:5,
     borderWidth: 1,
     borderColor: '#fff'
+  },
+  month:{
+    margin:10,
+    backgroundColor:"#ECECEC",
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.9,
+    borderRadius:5,
+    borderWidth: 1,
+    borderColor: '#fff'
+  },
+  year:{
+    margin:10,
+    backgroundColor:"#757575",
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.9,
+    
+    borderWidth: 1,
+    borderColor: '#fff'
   }
-
 })
 
 export default Activity;
