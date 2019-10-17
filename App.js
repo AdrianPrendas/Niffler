@@ -1,116 +1,62 @@
-import React, {Component} from 'react';
-import {
-  createSwitchNavigator,
-  createStackNavigator,
-  createAppContainer,
-  createDrawerNavigator,
-  createBottomTabNavigator,
-} from 'react-navigation';
+import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
+import * as Font from 'expo-font';
+import React, { useState } from 'react';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import {Button} from 'react-native';
+import AppNavigator from './navigation/AppNavigator';
 
+export default function App(props) {
+  const [isLoadingComplete, setLoadingComplete] = useState(false);
 
-import DashBoard from './app/components/dashboard';
-import Welcome from './app/components/welcome';
-import Activity from './app/components/activity';
-import Profile from './app/components/profile';
-import Settings from './app/components/settings';
-import Currencies from './app/components/currencies';
-import Chart from './app/components/chart';
-
-import Register from "./app/components/resgister"
-import Login from "./app/components/Login"
-
-import Icon from 'react-native-ionicons'
-import {TouchableHighlight} from 'react-native';
-
-
-const DashBoardTabNavigator = createBottomTabNavigator({
-  Activity:{
-    screen:Activity,
-    navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"add-circle-outline":"add"} color={tintColor}/>
-    }
+  if (!isLoadingComplete && !props.skipLoadingScreen) {
+    return (
+      <AppLoading
+        startAsync={loadResourcesAsync}
+        onError={handleLoadingError}
+        onFinish={() => handleFinishLoading(setLoadingComplete)}
+      />
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        <AppNavigator />
+      </View>
+    );
   }
-  ,Chart:{
-    screen:Chart,
-    navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"podium":"stats"} color={tintColor}/>
-    }
-  },
-  Currencies:{
-    screen:Currencies,
-    navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"analytics":"pulse"} color={tintColor}/>
-    }
-  },Profile:{
-    screen:Profile,
-    navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"person":"body"} color={tintColor}/>
-    }
-  },Settings:{
-    screen:Settings,
-    navigationOptions:{
-      tabBarIcon:({tintColor})=><Icon name={tintColor=="#757575"?"basket":"appstore"} color={tintColor}/>
-    }
-  }
-},
-{
-  navigationOptions:({navigation})=>{
-    const {routeName} = navigation.state.routes[navigation.state.index]
-    return {
-      headerTitle: routeName,
-      headerTitleContainerStyle:{justifyContent:"flex-end"},
-      headerLeftContainerStyle:{marginLeft:20}
-    }
-  },
-  tabBarOptions:{
-    inactiveTintColor :"#757575",
-    activeBackgroundColor:"#757575",
-    activeTintColor :"white",
-    showLabel: false,
-    tabBarIcon:{tintColor:"white"}
-  },
-  resetOnBlur :true
-})
-
-
-const DashBoardStackNavigator = createStackNavigator({
-  DashBoardTabNavigator: DashBoardTabNavigator
 }
-,{
-  defaultNavigationOptions:({navigation})=>{
-    return{
-      headerLeft: <TouchableHighlight onPress={()=>{}}>
-                    <Icon name="menu" onPress={navigation.openDrawer}/>                
-                  </TouchableHighlight>
-    }
-  },
+
+async function loadResourcesAsync() {
+  await Promise.all([
+    Asset.loadAsync([
+      require('./assets/images/robot-dev.png'),
+      require('./assets/images/robot-prod.png'),
+    ]),
+    Font.loadAsync({
+      // This is the font that we are using for our tab bar
+      ...Ionicons.font,
+      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
+      // remove this if you are not using it in your app
+      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+    }),
+  ]);
 }
-)
 
-/*
- headerMode: 'none',
-  navigationOptions: {
-    headerVisible: false,
-  }
-*/
+function handleLoadingError(error) {
+  // In this case, you might want to report the error to your error reporting
+  // service, for example Sentry
+  console.warn(error);
+}
 
-const AppDrawerNavigator = createDrawerNavigator({
-  DashBoard: {
-    screen: DashBoardStackNavigator
+function handleFinishLoading(setLoadingComplete) {
+  setLoadingComplete(true);
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  Activity,Chart,Currencies,Profile,Settings
-})
-
-const AppSwitchNavigation = createSwitchNavigator({
-  Welcome:{screen:Welcome},
-  Dashboard:{screen:AppDrawerNavigator},
-  Register,
-  Login
-
 });
-
-const AppContainer = createAppContainer(AppSwitchNavigation);
-
-export default AppContainer;
