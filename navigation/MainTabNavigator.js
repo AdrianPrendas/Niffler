@@ -7,71 +7,119 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
+import Activity from '../screens/activity';
+import Chart from '../screens/chart';
+import Currencies from '../screens/currencies';
+import Profile from '../screens/profile';
+
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
+
+
+
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {},
 });
 
-const HomeStack = createStackNavigator(
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const ActivityStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    Activity,
   },
   config
 );
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+ActivityStack.navigationOptions = {
+  tabBarLabel: 'Activity',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
           ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-add'
+          : 'calculator-variant'
       }
     />
   ),
 };
 
-HomeStack.path = '';
+ActivityStack.path = '';
 
-const LinksStack = createStackNavigator(
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const ChartStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Chart,
   },
   config
 );
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+ChartStack.navigationOptions = {
+  tabBarLabel: 'Chart',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'chart-bar'} />
   ),
 };
 
-LinksStack.path = '';
+ChartStack.path = '';
 
-const SettingsStack = createStackNavigator(
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const CurrenciesStack = createStackNavigator(
   {
-    Settings: SettingsScreen,
+    Currencies,
   },
   config
 );
 
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
+CurrenciesStack.navigationOptions = {
+  tabBarLabel: 'Currencies',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
+    <TabBarIcon size={26} focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'finance'} />
   ),
 };
 
-SettingsStack.path = '';
+CurrenciesStack.path = '';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const ProfileStack = createStackNavigator(
+  {
+    Profile,
+  },
+  config
+);
+
+ProfileStack.navigationOptions = {
+  tabBarLabel: 'Profile',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'minecraft'} />
+  ),
+};
+
+ProfileStack.path = '';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const tabNavigator = createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-});
+  ActivityStack,
+  ChartStack,
+  CurrenciesStack,
+  ProfileStack
+},
+{
+  navigationOptions:({navigation})=>{
+    const {routeName} = navigation.state.routes[navigation.state.index]
+    return {
+      headerTitle: routeName,
+      headerTitleContainerStyle:{justifyContent:"flex-end"},
+      headerLeftContainerStyle:{marginLeft:20}
+    }
+  }
+})
 
 tabNavigator.path = '';
 
