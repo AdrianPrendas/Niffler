@@ -3,16 +3,14 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 
 import Activity from '../screens/activity';
 import Chart from '../screens/chart';
 import Currencies from '../screens/currencies';
 import Profile from '../screens/profile';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Check from "../screens/check"
 
 
 
@@ -104,11 +102,30 @@ ProfileStack.path = '';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const CheckStack = createStackNavigator(
+  {
+    Check,
+  },
+  config
+);
+
+CheckStack.navigationOptions = {
+  tabBarLabel: 'Check',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'basket'} />
+  ),
+};
+
+ProfileStack.path = '';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const tabNavigator = createBottomTabNavigator({
   ActivityStack,
+  CheckStack,
   ChartStack,
   CurrenciesStack,
-  ProfileStack
+  ProfileStack,
 },
 {
   navigationOptions:({navigation})=>{

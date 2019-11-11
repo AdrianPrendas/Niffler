@@ -17,7 +17,7 @@ import {Text} from 'react-native-svg';
 
 import Proxy from "../components/proxy"
 
-class Week extends Component {
+class Chart extends Component {
   state = {
     proxy: new Proxy(),
     transactions: [],
@@ -111,7 +111,7 @@ class Week extends Component {
           data={dates}
           yAccessor={({index}) => index}
           scale={scale.ScaleBand}
-          contentInset={{top: data.length*2+5, bottom: data.length*2+5}}
+          contentInset={{top: data.length, bottom: data.length}}
           spacing={0.2}
           numberOfTicks={data.length}
           formatLabel={(value, index) =>
@@ -146,7 +146,7 @@ const MyStyleSheet = StyleSheet.create({
   },
 });
 
-export default Week;
+export default Chart;
 
 /*
 

@@ -43,7 +43,7 @@ export default Login = (props)=> {
       <View style={styles.buttonContainer}>
         <View style={styles.button}>
           <Button title="back" color="red"
-            onPress={() => props.navigation.navigate('Main')}
+            onPress={() => props.navigation.navigate('Welcome')}
           />
         </View>
         <View style={styles.button}>
